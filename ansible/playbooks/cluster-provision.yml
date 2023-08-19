@@ -30,7 +30,7 @@
       become: false
       run_once: true
       ansible.builtin.replace:
-        path: "{{ playbook_dir }}/../../../private_keys/kubeconfig"
+        path: "{{ playbook_dir }}/../../.private/kubeconfig"
         regexp: "https://127.0.0.1:{{ k3s_server['https-listen-port'] }}"
         replace: "https://{{ k3s_registration_address }}:{{ k3s_server['https-listen-port'] }}"
 
