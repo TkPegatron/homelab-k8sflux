@@ -5,6 +5,8 @@ metadata:
   name: cluster-operators-rook-ceph
   namespace: flux-system
 spec:
+  dependsOn:
+    - name: cluster-policies-kyverno
   path: ./k8s/operators/rook-ceph/rook-ceph/operator
   prune: true
   sourceRef:
