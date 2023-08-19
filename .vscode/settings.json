@@ -1,0 +1,34 @@
+{
+  "ansible.ansibleLint.arguments": "-c .github/linters/.ansible-lint",
+  "files.associations": {
+    "*.json5": "jsonc",
+    "**/ansible/**/*.yml": "ansible",
+    "**/ansible/**/*.sops.yml": "yaml",
+    "**/ansible/**/inventory/**/*.yml": "yaml",
+    "**/terraform/**/*.tf": "terraform",
+    "**/kubernetes/**/*.sops.toml": "plaintext",
+    "**/kubernetes/**/*.yaml": "yaml",
+    //Single file targets
+    "**/kubernetes/apps/default/coredns/app/files/zynthovian.xyz.db": "zone",
+  },
+  "material-icon-theme.folders.associations": {
+    ".taskfiles": "utils",
+    "repositories": "database",
+    "charts": "kubernetes",
+    "helm": "kubernetes",
+  },
+  "yaml.schemaStore.enable": true,
+  "yaml.schemas": {
+    "ansible": "ansible/**/*.yml",
+    "kubernetes": "kubernetes/**/*.yaml",
+    "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.22.4-standalone-strict/all.json": "file:///workspace/kubernetes/apps/networking/external-dns/app/shared/dnsendpoint-crd.yaml"
+  },
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs":"active",
+  "editor.guides.bracketPairsHorizontal": true,
+  "editor.guides.highlightActiveBracketPair": true,
+  "editor.hover.delay": 1500,
+  "editor.renderWhitespace": "all",
+  "files.trimTrailingWhitespace": true,
+  "ansible.python.interpreterPath": "/usr/bin/python"
+}

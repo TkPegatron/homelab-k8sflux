@@ -1,0 +1,18 @@
+{
+  "recommendations": [
+    "aaron-bond.better-comments",
+    "britesnow.vscode-toggle-quotes",
+    "eamodio.gitlens",
+    "hashicorp.terraform",
+    "mhutchie.git-graph",
+    "mitchdenny.ecdc",
+    "ms-kubernetes-tools.vscode-kubernetes-tools",
+    "oderwat.indent-rainbow",
+    "ombratteng.nftables",
+    "redhat.ansible",
+    "signageos.signageos-vscode-sops",
+    "usernamehw.errorlens",
+    "mohsen1.prettify-json",
+    "devmike.mikrotik-routeros-script"
+  ]
+}

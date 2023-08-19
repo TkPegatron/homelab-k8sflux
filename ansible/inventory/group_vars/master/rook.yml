@@ -1,0 +1,2 @@
+rook_block_devices:
+  - /dev/rook/osd

@@ -1,0 +1,49 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: longhorn-operator
+  namespace: longhorn-system
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: longhorn
+      version: 1.5.1
+      sourceRef:
+        kind: HelmRepository
+        name: longhorn
+        namespace: flux-system
+  maxHistory: 3
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    defaultSettings:
+      backupTarget: "nfs://kvm-xenia.int.zynthovian.xyz:/srv/nfs/media/Archives/Longhorn-PVC-Backup/"
+      defaultDataPath: "/var/lib/longhorn" # Pin this just in case
+#? Chart does not accept resources definition
+#    resources:
+#      requests:
+#        cpu: 100m
+#        memory: 128Mi
+#? Chart does not build ingress in a 'normal' way
+#    ingress:
+#      enabled: true
+#      ingressClassName: nginx
+#      annotations:
+#        hajimari.io/appName: "Longhorn"
+#        hajimari.io/icon: mdi:hardddisk
+#      host:
+#        name: &host longhorn.zynthovian.xyz
+#        path: /
+#      tls:
+#        - hosts:
+#            - *host

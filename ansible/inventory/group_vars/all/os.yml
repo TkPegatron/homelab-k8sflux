@@ -1,0 +1,30 @@
+---
+# (string) Timezone for the servers
+timezone: America/Detroit
+
+# (list) Additional ssh public keys to add to the nodes
+ssh_authorized_keys: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOkCJxXefrBTfQdc8vr1X95ZNEhP1BlRbVGXgVfjDcbv"
+
+ansible_ssh_private_key_file: ../.private/keys/ansible/ssh-ed25519
+ansible_user: ansible
+
+system_packages:
+  # NBDE_Client Dependencies
+  - clevis
+  - jose # used by role for idempotency
+  # Kubernetes
+  ## Longhorn
+  - iscsi-initiator-utils
+  - nfs-utils
+  # Sensors
+  - htop
+  - hdparm
+  - nvme-cli
+  - lm_sensors
+  # ETC
+  - socat
+  - dnf-utils
+  - ipvsadm
+  - python3-kubernetes
+  - python3-libselinux
+  - python3-pyyaml

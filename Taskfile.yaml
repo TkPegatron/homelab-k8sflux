@@ -1,0 +1,21 @@
+---
+version: "3"
+
+vars:
+  ANSIBLE_DIR: "{{.ROOT_DIR}}/ansible"
+  CLUSTER_DIR: "{{.ROOT_DIR}}/kubernetes"
+
+env:
+  KUBECONFIG: "{{.ANSIBLE_DIR}}/kubernetes/kubeconfig"
+
+includes:
+  an: .taskfiles/ansible/tasks.yml
+  fx: .taskfiles/flux/tasks.yml
+  ku: .taskfiles/kubernetes/Tasks.yml
+  #vs: .taskfiles/VolSync/Tasks.yml
+
+tasks:
+
+  default:
+    silent: true
+    cmds: ["task -l"]

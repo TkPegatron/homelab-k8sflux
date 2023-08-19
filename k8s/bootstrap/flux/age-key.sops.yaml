@@ -1,0 +1,41 @@
+# yamllint disable
+apiVersion: v1
+kind: Secret
+metadata:
+    name: sops-age
+    namespace: flux-system
+stringData:
+    age.agekey: ENC[AES256_GCM,data:5kHc2Lg3zFu2prFjVhtwOW1qS5Uy8Tk/TvXsAg9t3SgIt7/HXQp2ZXugUewQ9IF5+QqBMjYEtCe4+imycionZuQH98/h5tJcO797CagTUyWphJdE0COkLaYdAWiBjp94fBvSpPF08q2bP2W9A4nluhdO64ZDACvjleQx+/JaUugUyiYGlc4u7AYAeAKnubT9VJL2Iv3lENBrwnPwwFdsriMc3riH9olLZAYDdL6HNqbLbLFT9x22JiqF/mea,iv:c2cpzPGktEr64wCYQosWvr28ddPr3MijQj1NjYXCL5g=,tag:z9kpyynsrJ/S+AXaUkZkdg==,type:str]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age1ghh53ja2rkyvwc29sxzrz9d9t0f5g0qvkcd9wuem5h2tld5wtyfs8ewz9x
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBPOE5EUHZGM3RhMi9Sdm9O
+            U2V1ZkhDUG8xUVJrM3RiRUlEZXpTZTh4SVNBCnhLQjQzN3o4bHVUYUFwWFBmZ0V6
+            c203WTg0TzY3aEpvaE1zbWNGeXJnL00KLS0tIEZpSS9qcVBTQ0pKNnhJL3ZPUGNw
+            OGdNejZOdlJZWW1LWHNueHVjRE41dHMKhNJ7TgcQqxvalYVPbJmAviXnlCwyqb2y
+            L01y7bDMphaG0clFFh8BJ1oe7G5VOdhKLuf5Hben2HbofakMxgL0yg==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2023-08-19T14:58:05Z"
+    mac: ENC[AES256_GCM,data:ec297zSs3fLKdXC/wWnL2dBDVYHE4Fou7DEc2w+vEZmx2NHx4kg8Nyhji5+GUgaAeJRhHUb/p+Rxt12m5PW9qOuzNbcimVfkQq8F+diUxVgTR5jpBhcUD/+8unnjasqiALcqqVaopZG85iy2s7YaMKvn6AQL2UxP67OeIkpu5Q4=,iv:94zf5o4hQivX1RwXnzE3Oieyn9GFEIwbns8pFlBrc/M=,tag:axdU10iXeXhZCh72jH0cLw==,type:str]
+    pgp:
+        - created_at: "2023-08-19T14:58:04Z"
+          enc: |
+            -----BEGIN PGP MESSAGE-----
+
+            hF4DuBz7K6VE7cMSAQdAo5rUN4FzfaXrKUq3bRj3bb+WmNoShqd40QWY+vwBizww
+            vhvR9bxYguIb1dLuWPNm1lLKECSEuteu5HufotMHZuWnuzG6ckpBX3iT64M/dOvy
+            0pcBKpmqcYeXeiYC9B3+yuvXoojULKa8/vq/46uLvgaXi9XB9HUtaYRgSKwb2iqY
+            oA7vcEyB3S4+IC2AdOqW2MTl6lxkfUXQH4ZgmkSJchIcBWlSugE1jo4x1jhYe9++
+            MBAHY7C6LyG9zF4lvNJJrJAUrxgxg11KGQf9Nv4nDay73HWPg9SocXlYtklRNa4N
+            fIod1lCrYquh
+            =Nybu
+            -----END PGP MESSAGE-----
+          fp: 97E082451A4C10B2A9C8681C09DEECDAFFE8153F
+    encrypted_regex: ^(data|stringData)$
+    version: 3.7.3

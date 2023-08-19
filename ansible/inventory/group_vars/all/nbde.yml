@@ -1,0 +1,26 @@
+luks_admin_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          39376365353662383438616437626564313664636264666163353137303766356531313533363964
+          3535643865313232396434356331663532623133653664320a653332326165613232613437336161
+          39333563326265633235346133343332613234316162663433336334636236323161633864643064
+          6139353130396636380a623739653436386535666336613735343264353232616439323033303833
+          30656237363366623264633133346639663131666264313035353130376336373338
+
+# The values below are an attempt to override the NBDE vars,
+#   I have not tested this and likely wont until the next time my devcontainer is rebuilt
+#   The role from RedHat does not otherwise support Rocky as it does not equate Rocky and RHEL
+
+__nbde_client_packages:
+  - clevis
+  - clevis-dracut
+  - clevis-luks
+  - clevis-systemd
+  - iproute
+  - NetworkManager
+
+__nbde_client_initramfs_update_cmd: >
+  dracut -fv --regenerate-all
+
+__nbde_client_dracut_settings:
+  - kernel_cmdline+=" rd.neednet=1 "
+  - omit_dracutmodules+=" ifcfg "

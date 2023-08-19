@@ -1,0 +1,9 @@
+---
+creation_rules:
+  - path_regex: k8s/.*\.sops\.ya?ml
+    encrypted_regex: "^(data|stringData)$"
+    key_groups:
+      - pgp:
+          - 97E082451A4C10B2A9C8681C09DEECDAFFE8153F
+        age:
+          - age1ghh53ja2rkyvwc29sxzrz9d9t0f5g0qvkcd9wuem5h2tld5wtyfs8ewz9x

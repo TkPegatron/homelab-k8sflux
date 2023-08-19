@@ -1,0 +1,15 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: zynthovian-xyz
+  namespace: nginx-system
+spec:
+  secretName: zynthovian-xyz-tls
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+  commonName: zynthovian.xyz
+  dnsNames:
+    - zynthovian.xyz
+    - "*.zynthovian.xyz"

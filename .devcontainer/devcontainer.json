@@ -1,0 +1,40 @@
+{
+	"name": "Homelab Builder",
+	"build": {
+		"dockerfile": "./Dockerfile",
+		"args": {
+			"USERNAME": "${localEnv:USER}",
+			"VARIANT": "edge",
+			"UID": "1000"
+		}
+	},
+	"runArgs": [
+		"--userns=keep-id"
+	],
+	"workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,Z",
+    "workspaceFolder": "/workspace",
+	"containerUser": "${localEnv:USER}",
+	"remoteUser": "${localEnv:USER}",
+	"customizations": {
+		"vscode": {
+			"settings.extensions.verifySignature": false,
+			"extensions": [
+				"aaron-bond.better-comments",
+				"britesnow.vscode-toggle-quotes",
+				"eamodio.gitlens",
+				"HashiCorp.terraform",
+				"mhutchie.git-graph",
+				"mitchdenny.ecdc",
+				"ms-kubernetes-tools.vscode-kubernetes-tools",
+				"oderwat.indent-rainbow",
+				"omBratteng.nftables",
+				"redhat.ansible",
+				"signageos.signageos-vscode-sops",
+				"usernamehw.errorlens",
+				"medo64.render-crlf",
+				"mohsen1.prettify-json",
+				"devMike.mikrotik-routeros-script"
+			]
+		}
+	}
+}
