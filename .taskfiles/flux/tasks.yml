@@ -27,14 +27,6 @@ tasks:
           | xargs --max-procs=4 -l bash -c \
             'kubectl -n $0 annotate helmrelease/$1 reconcile.fluxcd.io/requestedAt="$(date +%s)" --overwrite'
 
-  tf-sync:
-    desc: Sync Flux Terraforms
-    cmds:
-      - |
-        kubectl get terraforms --all-namespaces --no-headers | awk '{print $1, $2}' \
-          | xargs --max-procs=4 -l bash -c \
-            'kubectl -n $0 annotate terraform/$1 reconcile.fluxcd.io/requestedAt="$(date +%s)" --overwrite'
-
   hr-suspend:
     desc: Suspend all Flux HelmReleases
     cmds:
@@ -48,3 +40,13 @@ tasks:
       - |
         flux get helmrelease --all-namespaces --no-header | awk '{print $1, $2}' \
           | xargs -l bash -c 'flux -n $0 resume helmrelease $1'
+
+  bootstrap:
+    desc: Run the commands to bootstrap flux
+    cmds:
+      - kubectl apply --server-side --kustomize ./kubernetes/bootstrap/flux
+      - sops --decrypt kubernetes/bootstrap/flux/age-key.sops.yaml | kubectl apply -f -
+      - sops --decrypt kubernetes/bootstrap/flux/git-deploy-key.sops.yaml | kubectl apply -f -
+      - sops --decrypt kubernetes/flux-config/cluster-vars/cluster-secrets.sops.yaml | kubectl apply -f -
+      - kubectl apply -f kubernetes/flux-config/cluster-vars/cluster-settings.yaml
+      - kubectl apply --server-side --kustomize ./kubernetes/flux-config/operator

@@ -5,10 +5,6 @@
   become: true
   gather_facts: true
   any_errors_fatal: true
-  pre_tasks:
-    - name: Pausing for 2 seconds...
-      ansible.builtin.pause:
-        seconds: 2
   tasks:
     - name: Reset disks
       ignore_errors: true
@@ -19,12 +15,12 @@
             path: /var/lib/rook
           when: rook_block_devices is defined and rook_block_devices | length > 0
 
-        #- name: Zap the drives
-        #  ansible.builtin.shell: |-
-        #    sgdisk --zap-all {{ item.0 }} || true
-        #  loop:
-        #    - "{{ rook_block_devices | default([]) }}"
-        #  when: rook_block_devices is defined and rook_block_devices | length > 0
+        - name: Zap the drives
+          ansible.builtin.shell: |-
+            sgdisk --zap-all {{ item.0 }} || true
+          loop:
+            - "{{ rook_block_devices | default([]) }}"
+          when: rook_block_devices is defined and rook_block_devices | length > 0
 
         - name: Wipe a large portion of the beginning of the disk to remove more LVM metadata that may be present
           ansible.builtin.shell: |-
