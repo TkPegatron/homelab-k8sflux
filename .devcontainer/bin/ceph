@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+kubectl exec -it -n rook-ceph deployments/rook-ceph-tools -- ceph "$@"

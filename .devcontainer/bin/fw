@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+case $1 in
+    "show")
+        case $2 in
+            "bgp")
+                ssh 172.22.0.1 "sudo vtysh -c \"show bgp $3\"";;
+            "dns")
+                ssh 172.22.0.1 'sudo rndc dumpdb -zones && sudo cat /var/named/data/cache_dump.db';;
+            "dhcp")
+                curl -X POST -H "Content-Type: application/json" -d "{\"command\": \"lease4-get\", \"service\": [\"dhcp4\"]}" http://172.22.0.120:8647;;
+            *)
+                echo "not implemented...";;
+        esac
+        ;;
+    *)
+        echo "not implemented...";;
+esac
