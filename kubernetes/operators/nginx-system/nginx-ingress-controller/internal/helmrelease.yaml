@@ -66,12 +66,12 @@ spec:
         enabled: true
         serviceMonitor:
           enabled: true
-          namespace: networking
+          namespace: nginx-system
           namespaceSelector:
             any: true
       extraArgs:
         default-ssl-certificate: |-
-          networking/zynthovian-xyz-tls
+          nginx-system/zynthovian-xyz-tls
       topologySpreadConstraints:
         - maxSkew: 1
           topologyKey: kubernetes.io/hostname
