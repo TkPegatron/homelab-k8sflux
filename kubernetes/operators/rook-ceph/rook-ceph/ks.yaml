@@ -31,6 +31,7 @@ metadata:
 spec:
   dependsOn:
     - name: cluster-operators-rook-ceph
+    - name: cluster-operators-csi-addons-controller
   path: ./kubernetes/operators/rook-ceph/rook-ceph/cluster
   prune: true
   sourceRef:
