@@ -23,19 +23,19 @@
   "suppressNotifications": ["prIgnoreNotification"],
   "ignorePaths": ["archive/**"],
   "flux": {
-    "fileMatch": ["k8s/.+\\.ya?ml$"]
+    "fileMatch": ["kubernetes/.+\\.ya?ml$"]
   },
   "helm-values": {
-    "fileMatch": ["k8s/.+\\.ya?ml$"]
+    "fileMatch": ["kubernetes/.+\\.ya?ml$"]
   },
   "kubernetes": {
-    "fileMatch": ["k8s/.+\\.ya?ml$"]
+    "fileMatch": ["kubernetes/.+\\.ya?ml$"]
   },
   "regexManagers": [
     {
       "description": "Process Tekton dependencies",
       "fileMatch": [
-        "k8s/.+\\.ya?ml$"
+        "kubernetes/.+\\.ya?ml$"
       ],
       "matchStrings": [
         "depName=(?<depName>\\S+)?\n.*?(?<currentValue>v\\d+\\.\\d+\\.\\d+)"
@@ -46,7 +46,7 @@
       "description": "Process custom dependencies",
       "fileMatch": [
         "ansible/.+\\.ya?ml$",
-        "k8s/.+\\.ya?ml$"
+        "kubernetes/.+\\.ya?ml$"
       ],
       "matchStrings": [
         "datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( versioning=(?<versioning>\\S+))?\n.*?\"(?<currentValue>.*)\"\n"
