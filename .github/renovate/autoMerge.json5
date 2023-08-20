@@ -10,7 +10,8 @@
       "matchUpdateTypes": ["digest"],
       "matchPackagePattern": [
         "ghcr.io/tkpegatron",
-        "ghcr.io/onedr0p"
+        "ghcr.io/onedr0p",
+        "ghcr.io/bjw-s"
       ]
     },
     {
