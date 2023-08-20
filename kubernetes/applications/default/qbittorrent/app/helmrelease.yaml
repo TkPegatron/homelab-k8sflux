@@ -1,0 +1,124 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.devbu.io/helm.toolkit.fluxcd.io/helmrelease_v2beta1.json
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: qbittorrent
+  namespace: default
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 1.5.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  maxHistory: 2
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  dependsOn:
+    - name: rook-ceph-cluster
+      namespace: rook-ceph
+  values:
+    controller:
+      type: statefulset
+    image:
+      repository: ghcr.io/onedr0p/qbittorrent
+      tag: 4.5.4@sha256:f0a74313d750bc437ba2ad34f3412de5ab9a978f3f5b74227a1bda69271fef3e
+    env:
+      TZ: America/New_York
+      QBITTORRENT__PORT: &port 80
+      QBITTORRENT__BT_PORT: &bittorrentPort 50413
+    service:
+      main:
+        ports:
+          http:
+            port: *port
+      bittorrent:
+        enabled: true
+        type: LoadBalancer
+        ports:
+          bittorrent:
+            enabled: true
+            port: *bittorrentPort
+            protocol: TCP
+            targetPort: *bittorrentPort
+        externalTrafficPolicy: Cluster
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: nginx
+        hosts:
+          - host: &host qb.zynthovian.xyz
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+    podSecurityContext:
+      runAsUser: 568
+      runAsGroup: 568
+      fsGroup: 568
+      fsGroupChangePolicy: OnRootMismatch
+      supplementalGroups: [10000]
+    volumeClaimTemplates:
+      - name: config
+        mountPath: /config
+        accessMode: ReadWriteOnce
+        size: 1Gi
+        storageClass: ceph-block
+    persistence:
+      downloads:
+        enabled: true
+        type: nfs
+        server: xenia.int.zynthovian.xyz
+        path: /srv/media/Downloads/qb
+        mountPath: /downloads
+    resources:
+      requests:
+        cpu: 10m
+        memory: 250Mi
+      limits:
+        memory: 2Gi
+    addons:
+      vpn:
+        enabled: true
+        env:
+          - name: VPN_SERVICE_PROVIDER
+            value: ivpn
+          - name: VPN_TYPE
+            value: openvpn
+          - name: VPN_ENDPOINT_PORT
+            value: 2050
+          - name: FIREWALL
+            value: "off"
+          - name: SHADOWSOCKS
+            value: "on"
+          - name: DOT
+            value: "off"
+          - name: OPENVPN_USER
+            valueFrom:
+              secretKeyRef:
+                name: ivpn
+                key: openvpn-username
+          - name: OPENVPN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: ivpn
+                key: openvpn-username
+          - name: SERVER_COUNTRIES
+            value: "Canada"
+          - name: FIREWALL_VPN_INPUT_PORTS
+            value: "42557"
+      netshoot:
+        enabled: true
