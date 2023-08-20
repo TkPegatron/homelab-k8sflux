@@ -11,3 +11,28 @@ tasks:
       - ansible-galaxy collection install -r requirements.yml --collections-path ~/.ansible/collections --force
     preconditions:
       - test -f "{{.ANSIBLE_DIR}}/requirements.yml"
+
+  initramfs:
+    desc: Regenerate initramfs on Kubernetes hosts
+    dir: '{{.ANSIBLE_DIR}}'
+    cmds:
+      - ansible all -m shell -a "dracut -fv --regenerate-all"
+
+  prepare:
+    desc: Run the prepare playbook against the cluster
+    dir: '{{.ANSIBLE_DIR}}'
+    cmds:
+      - ansible-playbook ./playbooks/cluster-prepare.yml
+
+  provision:
+    desc: Run the provision playbook against the cluster
+    dir: '{{.ANSIBLE_DIR}}'
+    cmds:
+      - ansible-playbook ./playbooks/cluster-provision.yml
+
+  deprovision:
+    desc: Run the deprovisioning playbooks against the cluster
+    dir: '{{.ANSIBLE_DIR}}'
+    cmds:
+      - ansible-playbook ./playbooks/cluster-deprovision.yml
+      - ansible-playbook ./playbooks/cluster-rook-deprovision.yml
