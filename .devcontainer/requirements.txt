@@ -1,4 +1,4 @@
-openshift==0.13.1
+openshift==0.13.2
 resolvelib<1.0.2,>=1.0.1
 black>=22.8.0
 jsonschema>=4.10.0
