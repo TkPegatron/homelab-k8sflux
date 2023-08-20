@@ -90,34 +90,5 @@ spec:
       limits:
         memory: 2Gi
     addons:
-      vpn:
-        enabled: true
-        env:
-          - name: VPN_SERVICE_PROVIDER
-            value: ivpn
-          - name: VPN_TYPE
-            value: openvpn
-          - name: VPN_ENDPOINT_PORT
-            value: 2050
-          - name: FIREWALL
-            value: "off"
-          - name: SHADOWSOCKS
-            value: "on"
-          - name: DOT
-            value: "off"
-          - name: OPENVPN_USER
-            valueFrom:
-              secretKeyRef:
-                name: ivpn
-                key: openvpn-username
-          - name: OPENVPN_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: ivpn
-                key: openvpn-username
-          - name: SERVER_COUNTRIES
-            value: "Canada"
-          - name: FIREWALL_VPN_INPUT_PORTS
-            value: "42557"
       netshoot:
         enabled: true
