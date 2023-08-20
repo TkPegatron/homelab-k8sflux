@@ -7,7 +7,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 30m
-  url: ssh://git@github.com/TkPegatron/homelab-as-code
+  url: ssh://git@github.com/TkPegatron/homelab-k8sflux
   ref:
     branch: main
   secretRef:
