@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-/usr/bin/sops --decrypt --in-place
+/usr/bin/sops --decrypt --in-place "$@"
