@@ -36,6 +36,9 @@ spec:
       gatewayDefault: false
       gatewayAnnotation: vpn.home.arpa/ivpn
       gatewayLabel: vpn.home.arpa/ivpn
+      namespaceSelector:
+        type: label
+        label: vpn.home.arpa/ivpn
     addons:
       vpn:
         enabled: true
