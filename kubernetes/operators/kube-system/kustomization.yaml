@@ -9,3 +9,4 @@ resources:
   - ./descheduler/ks.yaml
   - ./metrics-server/ks.yaml
   - ./local-path-provisioner/ks.yaml
+  - ./node-feature-discovery/ks.yaml
