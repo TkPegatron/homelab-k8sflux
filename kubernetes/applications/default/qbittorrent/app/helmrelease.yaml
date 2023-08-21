@@ -35,6 +35,10 @@ spec:
       TZ: America/New_York
       QBITTORRENT__PORT: &port 80
       QBITTORRENT__BT_PORT: &bittorrentPort 50413
+      QBT_BitTorrent__Session__Port: *bittorrentPort
+    envFrom:
+      - configMapRef:
+          name: qbittorrent-env
     service:
       main:
         ports:
@@ -68,12 +72,6 @@ spec:
       fsGroup: 568
       fsGroupChangePolicy: OnRootMismatch
       supplementalGroups: [10000]
-    volumeClaimTemplates:
-      - name: config
-        mountPath: /config
-        accessMode: ReadWriteOnce
-        size: 1Gi
-        storageClass: ceph-block
     persistence:
       downloads:
         enabled: true
@@ -81,6 +79,14 @@ spec:
         server: xenia.int.zynthovian.xyz
         path: /srv/media/Downloads/qb
         mountPath: /downloads
+      watchedFoldersConfig:
+        enabled: true
+        type: configMap
+        name: qbittorrent-config
+        items:
+          - key: watched_folders.json
+            path: watched_folders.json
+        mountPath: /config/qBittorrent/watched_folders.json
     resources:
       requests:
         cpu: 10m
