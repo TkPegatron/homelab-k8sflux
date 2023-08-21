@@ -27,11 +27,17 @@ spec:
   uninstall:
     keepHistory: false
   values:
+    DNSPolicy: ClusterFirst
     routed_namespaces:
       - default
     settings:
+      VXLAN_ID: 43
+      VPN_INTERFACE: "tun0"
       VPN_TRAFFIC_PORT: 2050
       VPN_BLOCK_OTHER_TRAFFIC: true
+      NOT_ROUTED_TO_GATEWAY_CIDRS: &local_cidrs >-
+        172.22.0.0/16 ${NET_POD_CIDR} ${NET_SVC_CIDR}
+      VPN_LOCAL_CIDRS: *local_cidrs
     webhook:
       gatewayDefault: false
       gatewayAnnotation: vpn.home.arpa/ivpn
@@ -86,21 +92,9 @@ spec:
             value: "Canada"
           - name: FIREWALL_VPN_INPUT_PORTS
             value: "42557"
-        resources:
-          requests:
-            cpu: 5m
-            memory: 64M
-          limits:
-            memory: 64M
         securityContext:
           capabilities:
             add:
               - NET_ADMIN
       netshoot:
         enabled: true
-        resources:
-          requests:
-            cpu: 5m
-            memory: 10M
-          limits:
-            memory: 10M
