@@ -39,6 +39,16 @@ spec:
       namespaceSelector:
         type: label
         label: vpn.home.arpa/ivpn
+    service:
+      vpn:
+        enabled: true
+        type: LoadBalancer
+        externalTrafficPolicy: Cluster
+        externalIPs: ["${SVC_POD_GATEWAY_ADDR}"]
+        ports:
+          shadowsocks:
+            enabled: true
+            port: 8388
     addons:
       vpn:
         enabled: true
