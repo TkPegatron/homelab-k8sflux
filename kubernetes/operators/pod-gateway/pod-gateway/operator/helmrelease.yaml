@@ -35,6 +35,7 @@ spec:
     webhook:
       gatewayDefault: false
       gatewayAnnotation: vpn.home.arpa/ivpn
+      gatewayLabel: vpn.home.arpa/ivpn
     addons:
       vpn:
         enabled: true
