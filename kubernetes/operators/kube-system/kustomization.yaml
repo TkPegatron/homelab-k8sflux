@@ -6,5 +6,6 @@ resources:
   # Pre Flux-Kustomizations
   - ./namespace.yaml
   # Flux-Kustomizations
+  - ./descheduler/ks.yaml
   - ./metrics-server/ks.yaml
   - ./local-path-provisioner/ks.yaml

@@ -5,6 +5,7 @@ kind: Kustomization
 resources:
   - ./angelnu.yaml
   - ./bjw-s.yaml
+  - ./descheduler.yaml
   - ./external-dns.yaml
   - ./ingress-nginx.yaml
   - ./jetstack.yaml
