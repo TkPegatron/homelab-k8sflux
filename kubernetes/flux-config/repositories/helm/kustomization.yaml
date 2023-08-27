@@ -4,6 +4,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - ./angelnu.yaml
+  - ./backube.yaml
   - ./bjw-s.yaml
   - ./descheduler.yaml
   - ./external-dns.yaml
@@ -12,5 +13,6 @@ resources:
   - ./kyverno.yaml
   - ./metrics-server.yaml
   - ./node-feature-discovery.yaml
+  - ./pireaus.yaml
   - ./prometheus-community.yaml
   - ./rook-ceph.yaml
