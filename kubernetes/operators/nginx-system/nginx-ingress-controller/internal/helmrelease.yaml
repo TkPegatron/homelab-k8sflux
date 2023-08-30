@@ -78,8 +78,9 @@ spec:
           whenUnsatisfiable: DoNotSchedule
           labelSelector:
             matchLabels:
-              app.kubernetes.io/name: nginx-internal
+              app.kubernetes.io/name: ingress-nginx
               app.kubernetes.io/component: controller
+              app.kubernetes.io/instance: nginx-internal
       resources:
         requests:
           cpu: 10m
