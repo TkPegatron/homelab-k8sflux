@@ -31,6 +31,14 @@ spec:
       tag: 4.5.5@sha256:30dffe7ad04ea0e39db0b50c0bd5e79362f99f7ff6b250526d2f389b58d96f14
     podAnnotations:
       vpn.home.arpa/ivpn: "true"
+    dnsConfig:
+      nameservers:
+        - "1.1.1.1"
+        - "8.8.8.8"
+      searches:
+        - default.svc.cluster.local
+        - svc.cluster.local
+        - cluster.local
     env:
       TZ: America/New_York
       QBITTORRENT__PORT: &port 80
