@@ -13,10 +13,10 @@ spec:
     copyMethod: Snapshot
     pruneIntervalDays: 7
     repository: qbittorrent-restic-config
+    storageClassName: ceph-filesystem
     cacheCapacity: 2Gi
     cacheStorageClassName: local-path
-    volumeSnapshotClassName: csi-ceph-blockpool
-    storageClassName: ceph-block
+    volumeSnapshotClassName: csi-ceph-filesystem
     moverSecurityContext:
       runAsUser: 568
       runAsGroup: 568
