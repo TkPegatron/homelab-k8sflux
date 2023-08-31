@@ -1,0 +1,13 @@
+apiVersion: "cilium.io/v2alpha1"
+kind: CiliumBGPPeeringPolicy
+metadata:
+  name: bgp-peering-policy
+spec:
+  virtualRouters:
+    - localASN: 64627
+      exportPodCIDR: false
+      neighbors:
+        - peerAddress: 172.22.0.1
+          peerASN: 64627
+          gracefulRestart:
+            enabled: true
