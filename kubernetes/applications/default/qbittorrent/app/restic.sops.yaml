@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: qbittorrent-restic-config
+    namespace: default
+type: Opaque
+stringData:
+    #ENC[AES256_GCM,data:oHlpRv6ySdCZLc/VX59at9oPrg==,iv:WcAR/1VHB5U12VDnE6fKK1gbmtxcgTpUYCVTgpCZpuI=,tag:DsnD2e6IrbKTHttKMc2N5Q==,type:comment]
+    RESTIC_REPOSITORY: ENC[AES256_GCM,data:OBswpjNhEBvGcknAz6cxFoZJWzKQ8Gw3Nc9FxKVaJct5/qdDk71yRPEqbHFFR1y/V5mJgqhl9doGq6a8u5sy,iv:e7wzHenb2tVpjvmvZUl6uVsKtdXZzqSh9p1zyg0Vugg=,tag:V1Fq7l/okLYoa0q0EPSyqg==,type:str]
+    #ENC[AES256_GCM,data:gIIz5H/5IqgUbBxiIQR2+JmmhEH0X3++r11+NpaF,iv:fym3Ql6R7M3V6Eekbmlav1UZLi+GIWI8GnXGwriWPak=,tag:UKi2o9r78Qh/bYDvVvkX1Q==,type:comment]
+    RESTIC_PASSWORD: ENC[AES256_GCM,data:cQk9/Z/oKPiK2aihxvogy6xfsa21d8JiTYwSKVhQGA/rpVtG,iv:KrOQBm1d6bD4t9UdGvlGU76dLgAMdA59mB1mHedhXwk=,tag:aj3Slq/cICdp6bGpFQ1FtQ==,type:str]
+    #ENC[AES256_GCM,data:PP5/gtct04vXX+E0TZNHCktvrPAgxcCRUU/XO/fzx9PAoUMFazY0QmU=,iv:gmVsKChxycXLocJvqBtmi4pVH6umYAv9RVq9WPgdhbE=,tag:dtKHtyofHg3QQUyK3UMPeg==,type:comment]
+    #ENC[AES256_GCM,data:XI+hRDDQrnImRQYNZBDZO7Cm2OBtgfEul30xiUMnyESOCSTyItr0fc/yKJMSph9zShYKGNlg6Y/EU8fbqd9mvA+K4KTXog==,iv:PCrJyHnr7ti9OmvtdIuOtfx4ikKAHplEjYFGycZJclQ=,tag:9ZD587UJJC2VaD9tKkJH7w==,type:comment]
+    AWS_ACCESS_KEY_ID: ENC[AES256_GCM,data:VEwdRo6nvNuz5jpWOUK/77DXFms=,iv:1vyWztQ9PPajmyH2aDrMllov9FIinMTaRpwRpZBRsNA=,tag:P1SugG00gHxFPSW7Yd3YNQ==,type:str]
+    AWS_SECRET_ACCESS_KEY: ENC[AES256_GCM,data:jDNBgVkZTr/gfSMd6eCh6RgQ4TEMMG5uYKB5rjXMl5NMeUEQ3GJ/4A==,iv:FL9E+R0PlgV0erS70UQxMtWsJGo6mOkuNPoqxwwhp9I=,tag:O0ZjKLtQFKWcI3YpGumHNw==,type:str]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age1ghh53ja2rkyvwc29sxzrz9d9t0f5g0qvkcd9wuem5h2tld5wtyfs8ewz9x
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBVQ3k2OXVSQUhLdDQ2U3VU
+            UldEeUQ4YzMzYWo1emQ0Njl6R2hNYThxZ3hjCkVSWHZ4MXgybXQ2eW5nK0FvZ1hv
+            bDFuSllLeXNqYVkvdER5b1FKL1dTeUkKLS0tIGdERm1aTzN2ZVN4K21GaDQ3Y0h6
+            NkxrT0lteFFHS0JWLzRqc2ladE9MZmMK54j2MsuSAxxC6cpFov4FegJnIRkikstk
+            m5VWSEWL3mAuQSIyLdpI5bxhT3i4VWeTJmyocnA2Ffs82Wj5Ms61WQ==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2023-08-31T14:50:39Z"
+    mac: ENC[AES256_GCM,data:49BoA8Q90K2dn7pScoAVb6h5iB1sv2JKGzV6zDvQJAE3l0aJx1cjcO8PznncZRMuujHNkSeHOedF/XynZlwAJSJr+AZIx4O91pNwCQGwW7oBsSNiaOkulK1uetCSSULnzVCMOw8Inb/X2njKz3uEKFouBz6X0RHKB/+Y5QH/SOE=,iv:eUe1JHYt2FrV9WasUZ61ilfzE+ipRgn5GsGfb0BWLxE=,tag:fVfUJDd8EMVNDusCI8WOBg==,type:str]
+    pgp:
+        - created_at: "2023-08-31T12:57:39Z"
+          enc: |
+            -----BEGIN PGP MESSAGE-----
+
+            hF4DuBz7K6VE7cMSAQdAJHUoJIBR4GW7aVH3ElqeyUT3nB6BFMzbiJXHL8rCkjAw
+            M7MEmdnlvQxZMQ1KiwuL/4v9Ln7TKx4SF3F3CWssTwMbkIqCK9PUMUiz0gIWVWjZ
+            0pUBD+xJ1bvd/88PVMJHZPPoVsgqKu4SUti2ZxdaypBYJ2QTI8sDWKSbUn8UsLnb
+            gnJG04VXpkgI3p40bkjEZJLBcaCWReVlMeQt+fNKvKO+gF5TkYo2widVRTJg0oVU
+            SvfWvD91QBHSgZcffgCXvWmztjDQ2SUuh74TQrMbOnBIrIrtts2bBYAswNbWekLo
+            W+NPTcaOnA==
+            =7EhV
+            -----END PGP MESSAGE-----
+          fp: 97E082451A4C10B2A9C8681C09DEECDAFFE8153F
+    encrypted_regex: ^(data|stringData)$
+    version: 3.7.3
