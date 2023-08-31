@@ -87,7 +87,7 @@ spec:
         server: xenia.int.zynthovian.xyz
         path: /srv/media/Downloads/qb
         mountPath: /downloads
-      watchedFoldersConfig:
+      watchedfoldersconfig:
         enabled: true
         type: configMap
         name: qbittorrent-config
