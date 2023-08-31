@@ -87,14 +87,14 @@ spec:
         server: xenia.int.zynthovian.xyz
         path: /srv/media/Downloads/qb
         mountPath: /downloads
-      watchedfoldersconfig:
-        enabled: true
-        type: configMap
-        name: qbittorrent-config
-        items:
-          - key: watched_folders.json
-            path: watched_folders.json
-        mountPath: /config/qBittorrent/watched_folders.json
+      #watchedfoldersconfig:
+      #  enabled: true
+      #  type: configMap
+      #  name: qbittorrent-config
+      #  items:
+      #    - key: watched_folders.json
+      #      path: watched_folders.json
+      #  mountPath: /config/qBittorrent/watched_folders.json
     resources:
       requests:
         cpu: 10m
