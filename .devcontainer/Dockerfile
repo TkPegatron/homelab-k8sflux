@@ -20,7 +20,7 @@ RUN apk add --upgrade --no-cache dog
 RUN apk add --upgrade \
     zsh bat direnv curl exa stow file git skim neovim starship tzdata \
     ca-certificates gpg gpg-agent openssh-client libcrypto3 \
-    python3 py3-pip sshpass pcre rsync
+    python3 py3-pip sshpass pcre rsync envsubst
 
 # Environment tools (For Terraform, Kubernetes & Ansible GitOps workflow)
 RUN apk add --upgrade --no-cache \

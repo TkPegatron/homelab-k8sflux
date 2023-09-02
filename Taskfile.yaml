@@ -11,8 +11,8 @@ env:
 includes:
   an: .taskfiles/ansible/tasks.yml
   fx: .taskfiles/flux/tasks.yml
-  ku: .taskfiles/kubernetes/Tasks.yml
-  #vs: .taskfiles/VolSync/Tasks.yml
+  ku: .taskfiles/kubernetes/tasks.yml
+  vs: .taskfiles/volsync/tasks.yml
 
 tasks:
 
