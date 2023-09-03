@@ -7,7 +7,7 @@ spec:
     - localASN: 64627
       exportPodCIDR: false
       neighbors:
-        - peerAddress: 172.22.0.1
+        - peerAddress: "172.22.0.1/32"
           peerASN: 64627
           gracefulRestart:
             enabled: true
