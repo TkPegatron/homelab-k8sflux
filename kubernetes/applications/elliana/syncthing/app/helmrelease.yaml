@@ -44,27 +44,21 @@ spec:
         ports:
           http:
             port: 8384
-      transfer:
+      supplimental:
         type: LoadBalancer
         #externalIPs: ["${SVC_SYNCTHING_ADDR}"]
         annotations:
           io.cilium/lb-ipam-ips: "${SVC_SYNCTHING_ADDR}"
         ports:
+          discovery:
+            port: 21027
+            protocol: UDP
+            primary: true
           tcp-transfer:
             port: 22000
             protocol: TCP
-            primary: true
           quic:
             port: 22000
-            protocol: UDP
-      discovery:
-        type: LoadBalancer
-        #externalIPs: ["${SVC_SYNCTHING_ADDR}"]
-        annotations:
-          io.cilium/lb-ipam-ips: "${SVC_SYNCTHING_ADDR}"
-        ports:
-          udp:
-            port: 21027
             protocol: UDP
     ingress:
       main:
