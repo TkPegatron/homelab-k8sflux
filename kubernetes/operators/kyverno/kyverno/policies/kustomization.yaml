@@ -3,6 +3,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ./delete-resource-limits.yaml
-  - ./delete-resource-requests.yaml
+  - ./delete-cpu-limits.yaml
   - ./mutate-ingress-annotations.yaml
+  - ./rook-resource-limits.yaml
+  - ./rook-resource-requests.yaml
