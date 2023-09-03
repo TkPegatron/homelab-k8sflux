@@ -11,3 +11,7 @@ nbde_client_bindings:
           6538333061633033323838383062346333363338346538303765
     servers:
       - http://172.22.0.1:6830
+
+rook_block_devices:
+  - /dev/rook/osd
+  - /dev/mapper/rook_ssd

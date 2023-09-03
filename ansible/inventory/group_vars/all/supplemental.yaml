@@ -1,3 +1,31 @@
+---
+# (string) Source for ssh keys
+github_username: tkpegatron
+
+# (string) System Timezone
+timezone: America/Detroit
+
+system_packages:
+  # NBDE_Client Dependencies
+  - clevis
+  - jose
+  # Kubernetes
+  ## Longhorn
+  - iscsi-initiator-utils
+  - nfs-utils
+  # Sensors
+  - htop
+  - hdparm
+  - nvme-cli
+  - lm_sensors
+  # ETC
+  - socat
+  - dnf-utils
+  - ipvsadm
+  - python3-kubernetes
+  - python3-libselinux
+  - python3-pyyaml
+
 luks_admin_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           39376365353662383438616437626564313664636264666163353137303766356531313533363964

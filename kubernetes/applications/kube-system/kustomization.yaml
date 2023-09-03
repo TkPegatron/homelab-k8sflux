@@ -4,11 +4,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   # Pre Flux-Kustomizations
-  - ./namespace.yaml
+  # - ./namespace.yaml ## ? Defined in kubernetes/operators/kube-system/namespace.yaml
   # Flux-Kustomizations
-  - ./cilium/ks.yaml
-  - ./descheduler/ks.yaml
-  - ./metrics-server/ks.yaml
-  - ./local-path-provisioner/ks.yaml
-  - ./node-feature-discovery/ks.yaml
-  - ./snapshot-controller/ks.yaml
+  - ./coredns/ks.yaml
