@@ -94,7 +94,6 @@ spec:
       bdev_async_discard = true
     cephClusterSpec:
       network:
-        provider: host
         connections:
           compression:
             enabled: true
