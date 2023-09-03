@@ -50,7 +50,9 @@ spec:
         enabled: true
         type: LoadBalancer
         externalTrafficPolicy: Cluster
-        externalIPs: ["${SVC_POD_GATEWAY_ADDR}"]
+        #externalIPs: ["${SVC_POD_GATEWAY_ADDR}"]
+        annotations:
+          io.cilium/lb-ipam-ips: "${SVC_POD_GATEWAY_ADDR}"
         ports:
           shadowsocks:
             enabled: true

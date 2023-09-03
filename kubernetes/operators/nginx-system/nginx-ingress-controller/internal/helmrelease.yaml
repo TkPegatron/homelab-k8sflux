@@ -36,7 +36,8 @@ spec:
       service:
         annotations:
           external-dns.alpha.kubernetes.io/hostname: nginx.zynthovian.xyz
-        externalIPs: ["${SVC_NGINX_ADDR}"]
+          io.cilium/lb-ipam-ips: "${SVC_NGINX_ADDR}"
+        #externalIPs: ["${SVC_NGINX_ADDR}"]
         externalTrafficPolicy: Local
       publishService:
         enabled: true
