@@ -12,6 +12,6 @@ nbde_client_bindings:
     servers:
       - http://172.22.0.120:6830
 
-rook_block_devices:
-  - /dev/rook/osd
-  - /dev/rook_ssd/osd
+ceph_drives:
+  - /dev/mapper/rook_nvme
+  - /dev/mapper/rook_ssd
