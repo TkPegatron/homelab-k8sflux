@@ -59,6 +59,10 @@
       when: k3s_primary_control_node
       ansible.builtin.include_tasks: tasks/cruft.yaml
 
+    - name: Kubeconfig
+      when: k3s_primary_control_node
+      ansible.builtin.include_tasks: tasks/retrieve_kubeconfig.yaml
+
     - name: Stale Containers
       ansible.builtin.include_tasks: tasks/stale_containers.yaml
       vars:
