@@ -11,3 +11,6 @@ spec:
           peerASN: 64627
           gracefulRestart:
             enabled: true
+      serviceSelector:
+        matchExpressions:
+          - {key: somekey, operator: NotIn, values: ['never-used-value']}
