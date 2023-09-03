@@ -1,0 +1,45 @@
+---
+- name: "Provision the kubernetes cluster"
+  hosts: all
+  become: true
+  gather_facts: true
+  any_errors_fatal: true
+  tasks:
+
+    - name: Display NBDE Facts
+      ansible.builtin.debug:
+        msg:
+          - "{{ ansible_facts['distribution'] }}_{{ ansible_facts['distribution_version'] }}.yml"
+          - "{{ ansible_facts['distribution'] }}_{{ ansible_facts['distribution_major_version'] }}.yml"
+          - "{{ ansible_facts['distribution'] }}.yml"
+          - "{{ ansible_facts['os_family'] }}.yml"
+
+    - name: Network Bound Disk Encryption
+      block:
+        - name: Network Bound Disk Encryption | Rotate LUKS Keys
+          loop: "{{ nbde_client_bindings }}"
+          no_log: true
+          register: luks_rotate_shell
+          changed_when: luks_rotate_shell.stdout == "changed"
+          ansible.builtin.shell:
+            cmd: |
+              set -o pipefail
+              if ! ((echo "{{ item.encryption_password }}") | cryptsetup --verbose open --test-passphrase {{ item.device }}); then
+                cryptsetup luksKillSlot {{ item.device }} {{ item.slot }} || true
+                printf "{{ item.encryption_password }}" > ./new_passphrase
+                printf "{{ luks_admin_password }}" > ./admin_passphrase
+                cryptsetup luksAddKey \
+                  --key-file ./admin_passphrase \
+                  --key-slot={{ item.slot }} \
+                  {{ item.device }} ./new_passphrase
+                rm ./new_passphrase ./admin_passphrase
+                echo "changed"; exit
+              fi
+              echo "unchanged"; exit
+        # If this starts to fail you may need to purge the tokens from the headder
+        #  for i in {0..6}; do sudo cryptsetup token remove --token-id $i {{ nbde_client_bindings.device[0] }} ;done
+        - name: Network Bound Disk Encryption | Execute Client Role
+          ansible.builtin.include_role:
+            name: nbde_client
+            public: true
+          no_log: true

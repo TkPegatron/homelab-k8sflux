@@ -14,3 +14,4 @@ nbde_client_bindings:
 
 rook_block_devices:
   - /dev/rook/osd
+  - /dev/mapper/rook_ssd
