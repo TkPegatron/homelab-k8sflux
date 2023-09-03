@@ -7,7 +7,6 @@
   tasks:
 
     - name: Setup luks on /dev/sda
-      changed_when: luks_rotate_shell.stdout == "changed"
       ansible.builtin.shell:
         cmd: |
           set -o pipefail
@@ -17,4 +16,5 @@
               --key-file ./admin_passphrase \
               /dev/sda /etc/cryptokey.bin
             echo "rook_ssd /dev/sda /etc/cryptokey.bin discard"
+            cryptsetup luksOpen /dev/sda --key-file ./admin_passphrase rook_ssd
             rm ./admin_passphrase
