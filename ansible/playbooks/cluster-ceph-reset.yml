@@ -8,7 +8,6 @@
   tasks:
     - name: Reset Ceph Config # noqa: ignore-errors
       ignore_errors: true
-      when: ceph_drives | default([]) | length > 0
       block:
         - name: Delete (/var/lib/rook)
           ansible.builtin.file:
@@ -24,12 +23,17 @@
           ansible.builtin.command: rm -rf /dev/mapper/ceph--*
 
     - name: Wipe Disk Topology
+      ignore_errors: true
+      when: luks_secondaries | default([]) | length > 0
       block:
         - name: Wipe (sgdisk) # noqa: no-changed-when
           ansible.builtin.command: "sgdisk --zap-all {{ item.path }}"
           loop: "{{ luks_secondaries }}"
         - name: Wipe (dd) # noqa: no-changed-when
-          ansible.builtin.command: "dd if=/dev/zero of={{ item.path }} bs=1M count=100 oflag=direct,dsync"
+          ansible.builtin.command: "dd if=/dev/zero of={{ item.path }} bs=1M count=200 oflag=direct,dsync"
+          loop: "{{ luks_secondaries }}"
+        - name: Wipe (partprobe) # noqa: no-changed-when
+          ansible.builtin.command: "partprobe {{ item.path }}"
           loop: "{{ luks_secondaries }}"
         - name: Wipe (blkdiscard) # noqa: no-changed-when
           ansible.builtin.command: "blkdiscard {{ item.path }}"
@@ -41,8 +45,10 @@
           ansible.builtin.reboot:
 
     - name: Rebuild Disk Topology
+      ignore_errors: true
+      when: luks_secondaries | default([]) | length > 0
       block:
-        - name: CryptSetup LuksFormat # noqa: no-changed-when
+        - name: CryptSetup LuksFormat/LuksAddKey # noqa: no-changed-when
           ansible.builtin.shell:
             cmd: |
               set -o pipefail
