@@ -6,7 +6,7 @@
   gather_facts: true
   any_errors_fatal: true
   tasks:
-    - name: Reset Ceph Drives # noqa: ignore-errors
+    - name: Reset Ceph Config # noqa: ignore-errors
       ignore_errors: true
       when: ceph_drives | default([]) | length > 0
       block:
@@ -22,15 +22,53 @@
           ansible.builtin.command: rm -rf /dev/ceph-*
         - name: Delete (/dev/mapper/ceph--*) # noqa: no-changed-when
           ansible.builtin.command: rm -rf /dev/mapper/ceph--*
+
+    - name: Wipe Disk Topology
+      block:
         - name: Wipe (sgdisk) # noqa: no-changed-when
-          ansible.builtin.command: "sgdisk --zap-all {{ item }}"
-          loop: "{{ ceph_drives }}"
+          ansible.builtin.command: "sgdisk --zap-all {{ item.path }}"
+          loop: "{{ luks_secondaries }}"
         - name: Wipe (dd) # noqa: no-changed-when
-          ansible.builtin.command: "dd if=/dev/zero of={{ item }} bs=1M count=100 oflag=direct,dsync"
-          loop: "{{ ceph_drives }}"
+          ansible.builtin.command: "dd if=/dev/zero of={{ item.path }} bs=1M count=100 oflag=direct,dsync"
+          loop: "{{ luks_secondaries }}"
         - name: Wipe (blkdiscard) # noqa: no-changed-when
-          ansible.builtin.command: "blkdiscard {{ item }}"
-          loop: "{{ ceph_drives }}"
+          ansible.builtin.command: "blkdiscard {{ item.path }}"
+          loop: "{{ luks_secondaries }}"
         - name: Wipe (partprobe) # noqa: no-changed-when
-          ansible.builtin.command: "partprobe {{ item }}"
-          loop: "{{ ceph_drives }}"
+          ansible.builtin.command: "partprobe {{ item.path }}"
+          loop: "{{ luks_secondaries }}"
+        - name: Reboot Nodes
+          ansible.builtin.reboot:
+
+    - name: Rebuild Disk Topology
+      block:
+        - name: CryptSetup LuksFormat # noqa: no-changed-when
+          ansible.builtin.shell:
+            cmd: |
+              set -o pipefail
+                printf "{{ luks_admin_password }}" > ./admin_passphrase
+                cryptsetup luksFormat {{ item.path }} ./admin_passphrase
+                cryptsetup luksAddKey \
+                  --key-file ./admin_passphrase {{ item.path }} /etc/cryptokey.bin
+                rm ./admin_passphrase
+          loop: "{{ luks_secondaries }}"
+        - name: CryptSetup luksOpen # noqa: no-changed-when
+          ansible.builtin.command: "cryptsetup luksOpen {{ item.path }} --key-file /etc/cryptokey.bin {{ item.name }}"
+          loop: "{{ luks_secondaries }}"
+        - name: Remove name from Crypttab # noqa: no-changed-when
+          ansible.builtin.command: "sed -s '/{{ item.name }}/d' -i /etc/crypttab"
+          loop: "{{ luks_secondaries }}"
+        - name: Add device to crypttab
+          ansible.builtin.lineinfile:
+            line: "{{ item.name }} {{ item.path }} /etc/cryptokey.bin discard"
+            path: /etc/crypttab
+          loop: "{{ luks_secondaries }}"
+        - name: Create LVM PV # noqa: no-changed-when
+          ansible.builtin.command: pvcreate /dev/mapper/{{ item.name }}
+          loop: "{{ luks_secondaries }}"
+        - name: Create LVM VG # noqa: no-changed-when
+          ansible.builtin.command: vgcreate {{ item.name }} /dev/mapper/{{ item.name }}
+          loop: "{{ luks_secondaries }}"
+        - name: Create LVM LV # noqa: no-changed-when
+          ansible.builtin.command: lvcreate -l 100%FREE -n osd {{ item.name }}
+          loop: "{{ luks_secondaries }}"
