@@ -79,14 +79,15 @@ tasks:
   restore:
     desc: Trigger a Restic ReplicationSource restore (ex. task volsync:restore rsrc=plex [namespace=default])
     cmds:
-      - task: restore-suspend-app
-        vars: *task-vars
-      - task: restore-wipe-job
-        vars: *task-vars
-      - task: restore-volsync-job
-        vars: *task-vars
-      - task: restore-resume-app
-        vars: *task-vars
+      - echo "{{.kustomization}} -> {{.namespace}}/{{.controller}}-{{.rsrc}} {{.claim}} @{{.resao}}"
+      #- task: restore-suspend-app
+      #  vars: *task-vars
+      #- task: restore-wipe-job
+      #  vars: *task-vars
+      #- task: restore-volsync-job
+      #  vars: *task-vars
+      #- task: restore-resume-app
+      #  vars: *task-vars
     vars:
       rsrc: '{{ or .rsrc (fail "Variable `rsrc` is required") }}'
       namespace: '{{.namespace | default "default"}}'
@@ -106,8 +107,12 @@ tasks:
           app=$(kubectl -n {{.namespace}} get persistentvolumeclaim {{.claim}} -o jsonpath="{.metadata.labels.app\.kubernetes\.io/name}")
           if kubectl -n {{ .namespace }} get deployment.apps/$app >/dev/null 2>&1 ; then
             echo "deployment.apps/$app"
-          else
+          elif kubectl -n {{ .namespace }} get statefulset.apps/$app >/dev/null 2>&1 ; then
             echo "statefulset.apps/$app"
+          elif kubectl -n {{ .namespace }} get replicaset.apps/$app >/dev/null 2>&1 ; then
+            echo "replicaset.apps/$app"
+          else
+            echo "deployment.apps/$app"
           fi
       resao: "{{.resao}}"
     env: *task-vars

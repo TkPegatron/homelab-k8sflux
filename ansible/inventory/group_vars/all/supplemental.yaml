@@ -1,7 +1,4 @@
 ---
-# (string) Source for ssh keys
-github_username: tkpegatron
-
 # (string) System Timezone
 timezone: America/Detroit
 

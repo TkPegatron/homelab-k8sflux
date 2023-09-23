@@ -25,21 +25,6 @@
             state: present
             update_cache: true
 
-    - name: User Configuration
-      block:
-        - name: User Configuration | SSH keys
-          ansible.posix.authorized_key:
-            user: "{{ ansible_user }}"
-            key: "https://github.com/{{ github_username }}.keys"
-        - name: User Configuration | Add user to sudoers
-          when: ansible_user != 'root'
-          ansible.builtin.copy:
-            content: "{{ ansible_user }} ALL=(ALL:ALL) NOPASSWD:ALL"
-            dest: "/etc/sudoers.d/{{ ansible_user }}"
-            owner: root
-            group: root
-            mode: "0440"
-
     - name: Network Configuration
       block:
         - name: Network Configuration | Set hostname to inventory hostname
