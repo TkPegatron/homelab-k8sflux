@@ -4,6 +4,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: vaultwarden
   namespace: default
+  labels:
+    app.kubernetes.io/name: vaultwarden
 spec:
   storageClassName: ceph-block
   accessModes:

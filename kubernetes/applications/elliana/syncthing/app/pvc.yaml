@@ -4,6 +4,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: syncthing
   namespace: elliana
+  labels:
+    app.kubernetes.io/name: syncthing
 spec:
   storageClassName: ceph-block
   accessModes:
