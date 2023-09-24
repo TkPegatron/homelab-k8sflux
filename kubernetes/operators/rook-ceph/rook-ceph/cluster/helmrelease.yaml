@@ -113,16 +113,22 @@ spec:
         nodes:
           - name: amd64-server-7f97c6.int.zynthovian.xyz
             devices:
-              - name: /dev/mapper/7f97c6-rook
-              #- name: /dev/mapper/rook_ssd
+              #- name: /dev/mapper/7f97c6-rook
+              - name: /dev/sda
+                config:
+                  encryptedDevice: "true"
           - name: amd64-server-a2e7bb.int.zynthovian.xyz
             devices:
-              - name: /dev/mapper/a2e7bb-rook
-              #- name: /dev/mapper/rook_ssd
+              #- name: /dev/mapper/a2e7bb-rook
+              - name: /dev/sda
+                config:
+                  encryptedDevice: "true"
           - name: amd64-server-b5915c.int.zynthovian.xyz
             devices:
-              - name: /dev/mapper/b5915c-rook
-              #- name: /dev/mapper/rook_ssd
+              #- name: /dev/mapper/b5915c-rook
+              - name: /dev/sda
+                config:
+                  encryptedDevice: "true"
     cephBlockPools:
       - name: ceph-blockpool
         spec:
