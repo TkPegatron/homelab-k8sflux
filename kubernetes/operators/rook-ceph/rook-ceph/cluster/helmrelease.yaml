@@ -113,16 +113,16 @@ spec:
         nodes:
           - name: amd64-server-7f97c6.int.zynthovian.xyz
             devices:
-              - name: /dev/rook_nvme/osd
-              - name: /dev/rook_ssd/osd
+              - name: /dev/7f97c6/rook
+              - name: /dev/sdavg/rook
           - name: amd64-server-a2e7bb.int.zynthovian.xyz
             devices:
-              - name: /dev/rook_nvme/osd
-              - name: /dev/rook_ssd/osd
+              - name: /dev/a2e7bb/rook
+              - name: /dev/sdavg/rook
           - name: amd64-server-b5915c.int.zynthovian.xyz
             devices:
-              - name: /dev/rook_nvme/osd
-              - name: /dev/rook_ssd/osd
+              - name: /dev/b5915c/rook
+              - name: /dev/sdavg/rook
     cephBlockPools:
       - name: ceph-blockpool
         spec:
