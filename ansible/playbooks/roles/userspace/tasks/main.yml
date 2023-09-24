@@ -1,0 +1,6 @@
+- name: Spool in package management tasks
+  ansible.builtin.import_tasks: package-management.yml
+
+- name: Spool in user configuration tasks
+  ansible.builtin.import_tasks: user-configuration.yml
+  when: system_users != []

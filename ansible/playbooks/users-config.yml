@@ -1,0 +1,8 @@
+---
+- name: "Prepare hosts to become cluter members"
+  hosts: all
+  become: true
+  gather_facts: true
+  any_errors_fatal: true
+  roles:
+    - userspace

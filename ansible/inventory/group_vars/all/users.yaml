@@ -1,0 +1,26 @@
+# (string) Source for ssh keys
+github_username: tkpegatron
+
+user_packages:
+  #- starship
+  - fd-find
+  - stow
+  - bat
+  - exa
+  - zsh
+  - git
+
+system_users:
+  - name: ansible
+    comment: Ansible automation controller
+    password: $5$6huoN1aY1j6rLnBF$IRMfh2M/WMk4UrxWEw2tUUie443NMrvCj8Ke4fWBop0
+    ssh_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOkCJxXefrBTfQdc8vr1X95ZNEhP1BlRbVGXgVfjDcbv
+    github_username: tkpegatron
+  - name: elliana
+    comment: Elliana Perry
+    password: $5$rJvRkRKvSYCYNSBo$YPnyTtJAHl5gOv.n7avlr324VtD6QNnybFOosExRTy6
+    shell: /bin/zsh
+    github_username: tkpegatron
+    dotfiles_git_url: https://github.com/TkPegatron/dotfiles.git
+    dotfiles_installer: install.sh

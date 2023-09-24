@@ -1,0 +1,12 @@
+- name: Enable the epel repository
+  ansible.builtin.dnf:
+    name: "epel-release"
+    state: present
+    update_cache: true
+
+- name: Install additional requested packages
+  when: user_packages is defined
+  ansible.builtin.dnf:
+    name: "{{ user_packages | default([]) }}"
+    state: present
+    update_cache: true

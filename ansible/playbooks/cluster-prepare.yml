@@ -53,12 +53,12 @@
         #    dest: /etc/systemd/networkd.conf
         #    regexp: ManageForeignRoutes
         #    line: ManageForeignRoutes=no
-        #- name: Network Configuration | Disable firewalld
-        #  ansible.builtin.systemd:
-        #    service: firewalld.service
-        #    enabled: false
-        #    masked: true
-        #    state: stopped
+        - name: Network Configuration | Disable firewalld
+          ansible.builtin.systemd:
+            service: firewalld.service
+            enabled: false
+            masked: true
+            state: stopped
 
     - name: System Configuration
       notify: Reboot

@@ -1,0 +1,49 @@
+- name: User Configuration
+  block:
+
+    - name: Create user account
+      loop: "{{ system_users }}"
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        password: "{{ item.password }}"
+        comment: "{{ item.comment | default(omit) }}"
+        append: "{{ item.append | default(omit) }}"
+        shell: "{{ item.shell | default(omit) }}"
+        groups: "{{ item.groups | default('users') }}"
+
+    - name: Pull SSH Keys from GitHub
+      loop: "{{ system_users }}"
+      when: item.github_username is defined
+      ansible.posix.authorized_key:
+        user: "{{ item.name }}"
+        key: "https://github.com/{{ github_username }}.keys"
+
+    - name: Add SSH Keys
+      loop: "{{ system_users }}"
+      when: item.ssh_keys is defined
+      ansible.posix.authorized_key:
+        user: "{{ item.name }}"
+        key: "{{ item.ssh_keys[0] }}"
+
+    - name: Allow user to sudo without password
+      loop: "{{ system_users }}"
+      ansible.builtin.copy:
+        content: "{{ item.name }} ALL=(ALL) NOPASSWD: ALL"
+        dest: "/etc/sudoers.d/{{ item.name }}"
+        mode: "0440"
+        owner: root
+        group: root
+
+    - name: Clone user configuration repository
+      loop: "{{ system_users }}"
+      become_user: "{{ item.name }}"
+      when: item.dotfiles_git_url is defined
+      ansible.builtin.git:
+        repo: "{{ item.dotfiles_git_url }}"
+        dest: "/home/{{ item.name }}/.dotfiles"
+
+    - name: Run user configuration install script
+      loop: "{{ system_users }}"
+      become_user: "{{ item.name }}"
+      when: item.dotfiles_installer is defined and item.dotfiles_git_url is defined
+      ansible.builtin.shell: "/home/{{ item.name }}/.dotfiles/{{ item.dotfiles_installer }}"
