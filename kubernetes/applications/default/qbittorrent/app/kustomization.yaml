@@ -5,6 +5,7 @@ kind: Kustomization
 resources:
   - ./configmap.yaml
   - ./helmrelease.yaml
+  - ./network-policy.yaml
   - ./pvc.yaml
   - ./restic.sops.yaml
   - ./volsync.yaml

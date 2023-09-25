@@ -1,0 +1,61 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: pod-gateway-vpn-only
+  namespace: default
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: qbittorrent
+  ingress:
+    - fromEndpoints:
+        - {}
+    - fromEndpoints:
+        - matchLabels:
+            k8s:app.kubernetes.io/name: pod-gateway
+            io.kubernetes.pod.namespace: pod-gateway
+      toPorts:
+        - ports:
+            - port: "8472"
+              protocol: UDP
+            - port: "68"
+              protocol: UDP
+    - fromEndpoints:
+        - matchLabels:
+            k8s:app.kubernetes.io/instance: nginx-internal
+            io.kubernetes.pod.namespace: nginx-system
+  egress:
+    - toEndpoints:
+        - {}
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+          rules:
+            dns:
+              - matchPattern: "*"
+    - toEndpoints:
+        - matchLabels:
+            k8s:app.kubernetes.io/instance: nginx-internal
+            io.kubernetes.pod.namespace: nginx-system
+      toPorts:
+        - ports:
+            - port: "443"
+    - toEndpoints:
+        - matchLabels:
+            k8s:app.kubernetes.io/name: pod-gateway
+            io.kubernetes.pod.namespace: pod-gateway
+      toPorts:
+        - ports:
+            - port: "8472"
+              protocol: UDP
+            - port: "67"
+              protocol: UDP
+    - icmps:
+        - fields:
+            - type: 8
+              family: IPv4
