@@ -14,8 +14,8 @@ data:
   # --[ Cluster network cidrs ]
   NET_NODE_CIDR: "172.20.0.0/25"
   NET_EIP_CIDR:  "172.21.0.0/16"
-  NET_POD_CIDR:  "10.42.0.0/16"
-  NET_SVC_CIDR:  "10.43.0.0/16"
+  NET_POD_CIDR:  "10.32.0.0/16"
+  NET_SVC_CIDR:  "10.33.0.0/16"
   # --[ Service LBIPs ]
   SVC_NGINX_ADDR:       "172.21.0.1"
   SVC_SYNCTHING_ADDR:   "172.21.0.2"
