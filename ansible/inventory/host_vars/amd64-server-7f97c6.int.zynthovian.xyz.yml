@@ -1,5 +1,5 @@
 nbde_client_bindings:
-  - device: /dev/disk/by-uuid/9f735f65-b35c-4192-ae16-6dd2dcbf0469
+  - device: /dev/disk/by-uuid/40a4dcae-f61f-42d4-9080-f07e9a3cca1f
     slot: 7
     encryption_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
