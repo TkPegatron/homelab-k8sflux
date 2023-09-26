@@ -4,6 +4,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: qbittorrent-config
   namespace: default
+  labels:
+    app.kubernetes.io/name: qbittorrent
 spec:
   storageClassName: ceph-filesystem
   accessModes: ["ReadWriteOnce"]
