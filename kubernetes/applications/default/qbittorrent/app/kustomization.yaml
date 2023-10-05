@@ -9,20 +9,15 @@ resources:
   - ./pvc.yaml
   - ./restic.sops.yaml
   - ./volsync.yaml
-patchesStrategicMerge:
-  - |
-    apiVersion: v1
-    kind: Endpoints
-    metadata:
+patchesJson6902:
+  - target:
+      group: core
+      version: v1
+      kind: Endpoints
       name: qbittorrent
-      namespace: default
-      labels:
-        vpn.home.arpa/ivpn: "true"
-  - |
-    apiVersion: v1
-    kind: Endpoints
-    metadata:
-      name: qbittorrent-bittorrent
-      namespace: default
-      labels:
-        vpn.home.arpa/ivpn: "true"
+    patch: |-
+      - op: add
+        path: /metadata/labels
+        value:
+          name: vpn.home.arpa/ivpn
+          value: "true"
