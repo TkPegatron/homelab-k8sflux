@@ -9,3 +9,20 @@ resources:
   - ./pvc.yaml
   - ./restic.sops.yaml
   - ./volsync.yaml
+patchesStrategicMerge:
+  - |
+    apiVersion: v1
+    kind: Endpoints
+    metadata:
+      name: qbittorrent
+      namespace: default
+      labels:
+        vpn.home.arpa/ivpn: "true"
+  - |
+    apiVersion: v1
+    kind: Endpoints
+    metadata:
+      name: qbittorrent-bittorrent
+      namespace: default
+      labels:
+        vpn.home.arpa/ivpn: "true"
