@@ -28,6 +28,8 @@ spec:
     keepHistory: false
   values:
     DNSPolicy: ClusterFirst
+    # -- Namespaces that might contain routed PODs and therefore
+    # require a copy of the gneerated settings configmap.
     routed_namespaces:
       - default
     settings:
@@ -40,11 +42,17 @@ spec:
       VPN_LOCAL_CIDRS: *local_cidrs
     webhook:
       gatewayDefault: false
-      gatewayAnnotation: vpn.home.arpa/ivpn
-      gatewayLabel: vpn.home.arpa/ivpn
+      gatewayAnnotation: vpn.home.arpa/tunnel
+      gatewayAnnotationValue: ivpn
+      gatewayLabel: vpn.home.arpa/tunnel
+      gatewayLabelValue: ivpn
       namespaceSelector:
-        type: label
-        label: vpn.home.arpa/ivpn
+        type: custom
+        custom:
+          matchExpressions:
+            - key: vpn.home.arpa/tunnel
+              operator: In
+              values: ['ivpn']
     service:
       vpn:
         enabled: true
