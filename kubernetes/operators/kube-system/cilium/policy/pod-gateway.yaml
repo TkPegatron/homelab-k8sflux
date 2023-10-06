@@ -4,8 +4,7 @@ metadata:
   name: pod-gateway-vpn-only
 spec:
   endpointSelector:
-    matchExpressions: # im losing it
-      # This ruleset should apply to any endpoint with the label key
+    matchExpressions:
       - { key: 'vpn.home.arpa/tunnel', operator: In, values: ['ivpn']}
   ingress:
     - fromEndpoints:
@@ -55,6 +54,13 @@ spec:
               protocol: UDP
             - port: "67"
               protocol: UDP
+    - toEndpoints:
+        - matchLabels:
+            cnpg.io/cluster: postgres
+      toPorts:
+        - ports:
+            - port: '5432'
+              protocol: TCP
     - icmps:
         - fields:
             - type: 8
