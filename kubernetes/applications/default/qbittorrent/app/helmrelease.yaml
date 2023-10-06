@@ -10,7 +10,7 @@ spec:
   chart:
     spec:
       chart: app-template
-      version: 1.5.1
+      version: 2.0.2
       sourceRef:
         kind: HelmRepository
         name: bjw-s
@@ -26,76 +26,94 @@ spec:
   uninstall:
     keepHistory: false
   values:
-    image:
-      repository: ghcr.io/onedr0p/qbittorrent
-      tag: 4.5.5@sha256:30dffe7ad04ea0e39db0b50c0bd5e79362f99f7ff6b250526d2f389b58d96f14
-    podAnnotations:
-      vpn.home.arpa/ivpn: "true"
-    dnsConfig:
-      nameservers:
-        - "1.1.1.1"
-        - "8.8.8.8"
-      searches:
-        - default.svc.cluster.local
-        - svc.cluster.local
-        - cluster.local
-    env:
-      TZ: America/New_York
-      QBITTORRENT__PORT: &port 80
-      QBITTORRENT__BT_PORT: &bittorrentPort 50413
-      QBT_BitTorrent__Session__Port: *bittorrentPort
-    envFrom:
-      - configMapRef:
-          name: qbittorrent-env
+
+    controllers:
+      main:
+        type: deployment
+        containers:
+          main:
+            image:
+              repository: ghcr.io/onedr0p/qbittorrent
+              tag: 4.5.5@sha256:30dffe7ad04ea0e39db0b50c0bd5e79362f99f7ff6b250526d2f389b58d96f14
+            env:
+              TZ: America/New_York
+              QBITTORRENT__PORT: &svport 80
+              QBITTORRENT__BT_PORT: &btport 50413
+              QBT_BitTorrent__Session__Port: *btport
+            envFrom:
+              - configMapRef:
+                  name: qbittorrent-env
+            resources:
+              requests:
+                cpu: 10m
+                memory: 250Mi
+              limits:
+                memory: 2Gi
+
+    defaultPodOptions:
+      annotations:
+        vpn.home.arpa/tunnel: "ivpn"
+        vpn.home.arpa/ivpn: "true"
+      labels:
+        vpn.home.arpa/tunnel: "ivpn"
+        vpn.home.arpa/ivpn: "true"
+      securityContext: #}---------------------------
+        runAsUser: 568
+        runAsGroup: 568
+        fsGroup: 568
+        fsGroupChangePolicy: OnRootMismatch
+        supplementalGroups: [10000]
+      dnsConfig: #}---------------------------
+        nameservers:
+          - "1.1.1.1"
+          - "8.8.8.8"
+        searches:
+          - default.svc.cluster.local
+          - svc.cluster.local
+          - cluster.local
+
+    persistence:
+      downloads:
+        type: nfs
+        server: xenia.int.zynthovian.xyz
+        path: /srv/media/Downloads/qb
+        globalMounts:
+          - path: '/downloads'
+      config:
+        enabled: true
+        existingClaim: qbittorrent-config
+
     service:
       main:
+        labels:
+          vpn.home.arpa/tunnel: 'ivpn'
         ports:
           http:
-            port: *port
+            port: *svport
       bittorrent:
         enabled: true
+        controller: main
         type: LoadBalancer
+        labels:
+          vpn.home.arpa/tunnel: 'ivpn'
         ports:
           bittorrent:
             enabled: true
-            port: *bittorrentPort
+            port: *btport
             protocol: TCP
-            targetPort: *bittorrentPort
+            targetPort: *btport
         externalTrafficPolicy: Cluster
     ingress:
       main:
         enabled: true
         ingressClassName: nginx
+        tls:
+          - hosts:
+              - qb.zynthovian.xyz
         hosts:
-          - host: &host qb.zynthovian.xyz
+          - host: qb.zynthovian.xyz
             paths:
               - path: /
                 pathType: Prefix
-        tls:
-          - hosts:
-              - *host
-    podSecurityContext:
-      runAsUser: 568
-      runAsGroup: 568
-      fsGroup: 568
-      fsGroupChangePolicy: OnRootMismatch
-      supplementalGroups: [10000]
-    persistence:
-      downloads:
-        enabled: true
-        type: nfs
-        server: xenia.int.zynthovian.xyz
-        path: /srv/media/Downloads/qb
-        mountPath: /downloads
-      config:
-        enabled: true
-        existingClaim: qbittorrent-config
-    resources:
-      requests:
-        cpu: 10m
-        memory: 250Mi
-      limits:
-        memory: 2Gi
-    addons:
-      netshoot:
-        enabled: true
+                service:
+                  name: main
