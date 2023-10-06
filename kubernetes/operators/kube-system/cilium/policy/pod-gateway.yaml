@@ -6,7 +6,7 @@ spec:
   endpointSelector:
     matchExpressions: # im losing it
       # This ruleset should apply to any endpoint with the label key
-      - { key: 'vpn.home.arpa/ivpn', operator: NotIn, values: ['superfluous']}
+      - { key: 'vpn.home.arpa/tunnel', operator: In, values: ['ivpn']}
   ingress:
     - fromEndpoints:
         - {}
