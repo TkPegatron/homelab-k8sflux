@@ -1,12 +1,12 @@
 apiVersion: cilium.io/v2
-kind: CiliumNetworkPolicy
+kind: CiliumClusterwideNetworkPolicy
 metadata:
   name: pod-gateway-vpn-only
-  namespace: default
 spec:
   endpointSelector:
-    matchLabels:
-      app.kubernetes.io/name: qbittorrent
+    matchExpressions: # im losing it
+      # This ruleset should apply to any endpoint with the label key
+      - { key: 'vpn.home.arpa/ivpn', operator: NotIn, values: ['superfluous']}
   ingress:
     - fromEndpoints:
         - {}
