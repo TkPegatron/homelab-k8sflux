@@ -53,10 +53,8 @@ spec:
     defaultPodOptions:
       annotations:
         vpn.home.arpa/tunnel: "ivpn"
-        vpn.home.arpa/ivpn: "true"
       labels:
         vpn.home.arpa/tunnel: "ivpn"
-        vpn.home.arpa/ivpn: "true"
       securityContext: #}---------------------------
         runAsUser: 568
         runAsGroup: 568
