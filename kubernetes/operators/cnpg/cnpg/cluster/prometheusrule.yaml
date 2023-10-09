@@ -50,6 +50,8 @@ spec:
             severity: warning
         - alert: LastFailedArchiveTime
           annotations:
+            # This will fire if there are any failed backup jobs, despite recovery.
+            # TODO: potential solution, reduce dataset to the last 24hrs?
             description: Archiving failed for {{ $labels.pod }}
             summary: Checks the last time archiving failed. Will be < 0 when it has not failed.
           expr: |-
