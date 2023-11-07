@@ -11,6 +11,7 @@ resources:
   - ./coredns.yaml
   - ./descheduler.yaml
   - ./external-dns.yaml
+  - ./grafana.yaml
   - ./ingress-nginx.yaml
   - ./jetstack.yaml
   - ./kyverno.yaml
