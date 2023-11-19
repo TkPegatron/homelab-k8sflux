@@ -30,11 +30,11 @@ spec:
         maxParallel: 8
       destinationPath: s3://postgres-cluster/
       endpointURL: http://xenia.zynthovian.xyz:9090
-      serverName: &currentCluster postgres-f7e11a630e3f
+      serverName: &currentCluster ea72e01b-9f39-47c2-b24d-f2f960122776
       s3Credentials:
         accessKeyId:
-          name: cloudnative-pg-superuser-secret
+          name: cloudnative-pg-s3-secret
           key: aws-access-key
         secretAccessKey:
-          name: cloudnative-pg-superuser-secret
+          name: cloudnative-pg-s3-secret
           key: aws-secret-key
