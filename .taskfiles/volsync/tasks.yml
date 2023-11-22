@@ -114,7 +114,7 @@ tasks:
           else
             echo "deployment.apps/$app"
           fi
-      resao: "{{.resao}}"
+      pervious: "{{.previous}}"
     env: *task-vars
     preconditions:
       - sh: test -f {{.wipeJobTemplate}}

@@ -17,6 +17,9 @@ spec:
     cacheCapacity: 1Gi
     cacheStorageClassName: local-path
     volumeSnapshotClassName: csi-ceph-blockpool
+    customCA:
+      secretName: syncthing-restic-config
+      key: CUSTOM_CA_CRT
     retain:
       daily: 7
       within: 3d

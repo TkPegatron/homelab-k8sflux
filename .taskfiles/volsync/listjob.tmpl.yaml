@@ -17,3 +17,18 @@ spec:
           envFrom:
             - secretRef:
                 name: "${rsrc}-restic-config"
+#TODO   The data below should be templated and excluded if CUSTOM_CA_CRT is not in ${rsrc}-restic-config
+          env:
+            - name: RESTIC_CACERT
+              value: /run/secrets/custom_ca
+          volumeMounts:
+            - name: custom-ca
+              subPath: custom_ca
+              mountPath: /run/secrets/custom_ca
+      volumes:
+        - name: custom-ca
+          secret:
+            secretName: "${rsrc}-restic-config"
+            items:
+              - key: CUSTOM_CA_CRT
+                path: custom_ca
