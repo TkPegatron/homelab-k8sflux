@@ -17,6 +17,9 @@ spec:
     cacheStorageClassName: local-path
     volumeSnapshotClassName: csi-ceph-blockpool
     storageClassName: ceph-block
+    customCA:
+      secretName: syncthing-restic-config
+      key: CUSTOM_CA_CRT
     moverSecurityContext:
       runAsUser: 1000
       runAsGroup: 1000
