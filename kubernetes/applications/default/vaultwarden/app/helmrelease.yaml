@@ -51,6 +51,10 @@ spec:
         annotations:
           hajimari.io/appName: "Vaultwarden"
           hajimari.io/icon: mdi:account-lock
+          gethomepage.dev/name: "Vaultwarden"
+          gethomepage.dev/group: "Apps"
+          gethomepage.dev/icon: vaultwarden.png
+          gethomepage.dev/enabled: "true"
           external-dns.alpha.kubernetes.io/target: nginx.zynthovian.xyz
         hosts:
           - host: &host vault.zynthovian.xyz

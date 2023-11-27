@@ -80,6 +80,10 @@ spec:
           external-dns.alpha.kubernetes.io/target: nginx.zynthovian.xyz
           hajimari.io/appName: "Rook-Ceph"
           hajimari.io/icon: simple-icons:ceph
+          gethomepage.dev/name: "Rook-Ceph"
+          gethomepage.dev/group: "Storage"
+          gethomepage.dev/icon: rook.png
+          gethomepage.dev/enabled: "true"
         host:
           name: &host rook.zynthovian.xyz
           path: /
