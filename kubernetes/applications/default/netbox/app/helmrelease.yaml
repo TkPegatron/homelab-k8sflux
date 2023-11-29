@@ -1,0 +1,151 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.zynthovian.xyz/helm.toolkit.fluxcd.io/helmrelease_v2beta1.json
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: netbox
+  namespace: default
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 2.0.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  maxHistory: 2
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+
+    controllers:
+      main:
+        type: deployment
+
+        initContainers:
+          init-db: # Set up postgres on cnpg multi-db cluster
+            image:
+              repository: ghcr.io/onedr0p/postgres-init
+              tag: rolling@sha256:71ddc70edccf201d6a521fe6216bc58d8c7c856a1ef96c4d4fbe9f548818ea4d
+              pullPolicy: IfNotPresent
+            envFrom:
+              - secretRef:
+                  name: netbox-postgres-init-environment
+
+        containers:
+          main:
+            image:
+              repository: ghcr.io/netbox-community/netbox
+              tag: latest@sha256:4acef01cccc9f6629b2ddbb39810e4eff15cdd0da83bd18aac63903974d2a695
+              pullPolicy: IfNotPresent
+            envFrom:
+              - configMapRef:
+                  name: netbox-environment
+          #worker: #TODO: Not sure if the worker is really needed in this environment.
+          redis-main:
+            image: &redis-image
+              repository: docker.io/library/redis
+              tag: 7.0.8-alpine
+              pullPolicy: IfNotPresent
+            command:
+              - sh
+              - -c
+              - |
+                redis-server --appendonly yes \
+                  --port $REDIS_PORT \
+                  --requirepass $(cat /run/secrets/redis_password)
+            env:
+              - name: REDIS_REPLICATION_MODE
+                value: master
+              - name: REDIS_PORT
+                value: '6379'
+          redis-cache:
+            image: *redis-image
+            command:
+              - sh
+              - -c
+              - |
+                redis-server \
+                  --port $REDIS_PORT \
+                  --requirepass $(cat /run/secrets/redis_password)
+            env:
+              - name: REDIS_PORT
+                value: '6378'
+
+    persistence:
+      netbox-secrets:
+        enabled: true
+        type: secret
+        name: netbox-secrets
+        advancedMounts:
+          main:
+            main: &netbox-secrets-mounts
+              # Sorry there is so many of these
+              #  kubernes cant mount the service account token
+              #  if you mount on /run/secrets/ directly
+              - path: /run/secrets/auth_ldap_bind_password
+                readOnly: true
+                subPath: auth_ldap_bind_password
+              - path: /run/secrets/email_password
+                readOnly: true
+                subPath: email_password
+              - path: /run/secrets/napalm_password
+                readOnly: true
+                subPath: napalm_password
+              - path: /run/secrets/secret_key
+                readOnly: true
+                subPath: secret_key
+              - path: /run/secrets/superuser_password
+                readOnly: true
+                subPath: superuser_password
+              - path: /run/secrets/superuser_api_token
+                readOnly: true
+                subPath: superuser_api_token
+              - path: /run/secrets/db_password
+                readOnly: true
+                subPath: postgres_password
+      netbox-redis-secrets:
+        enabled: true
+        type: secret
+        name: netbox-redis-secrets
+        globalMounts:
+          - path: /run/secrets/redis_password
+            readOnly: true
+            subPath: redis_password
+          - path: /run/secrets/redis_cache_password
+            readOnly: true
+            subPath: redis_password
+
+    service:
+      main:
+        ports:
+          http:
+            port: 8080
+
+    ingress:
+      main:
+        enabled: true
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/group: "Apps"
+          gethomepage.dev/icon: netbox.png
+          gethomepage.dev/name: "Netbox"
+        hosts:
+          - host: &host-main netbox.zynthovian.xyz
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  name: main
+        tls:
+          - hosts:
+            - *host-main

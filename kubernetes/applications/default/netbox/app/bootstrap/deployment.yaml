@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: netbox-initdb-adhoc
+  namespace: default
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  template:
+    spec:
+      containers:
+        - name: initdb
+          image: ghcr.io/onedr0p/postgres-init:rolling@sha256:71ddc70edccf201d6a521fe6216bc58d8c7c856a1ef96c4d4fbe9f548818ea4d
+          resources: {}
+          command:
+            - "/bin/bash"
+            - "-c"
+            - |
+              /entrypoint.sh
+              trap : TERM INT; sleep 9999999999d & wait
+          envFrom:
+            - secretRef:
+                name: netbox-postgres-init-environment

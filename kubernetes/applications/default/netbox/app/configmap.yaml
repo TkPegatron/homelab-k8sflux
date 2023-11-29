@@ -1,0 +1,30 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: netbox-environment
+  namespace: default
+data:
+  # NetBox environment variables
+  # More configuration can be added via: https://netbox.readthedocs.io/en/stable/configuration/optional-settings/
+  DB_HOST: postgres-rw.cnpg.svc.cluster.local
+  DB_NAME: netbox
+  DB_USER: netbox
+  TIME_ZONE: "America/Detroit"
+  ALLOWED_HOSTS: '*'
+  CHANGELOG_RETENTION: "90"
+  EXEMPT_VIEW_PERMISSIONS: ''
+  LOGIN_REQUIRED: "False"
+  MEDIA_ROOT: /opt/netbox/netbox/media
+  METRICS_ENABLED: "True"
+  REDIS_HOST: localhost
+  REDIS_PORT: "6379"
+  REDIS_SSL: "False"
+  REDIS_DATABASE: "0"
+  REDIS_CACHE_HOST: localhost
+  REDIS_CACHE_PORT: "6378"
+  REDIS_CACHE_SSL: "False"
+  REDIS_CACHE_DATABASE: "1"
+  SUPERUSER_NAME: admin
+  MAINTENANCE_MODE: 'False'
+  DEBUG: 'False'

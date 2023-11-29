@@ -1,0 +1,10 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./deployment.yaml
+commonLabels:
+  app.kubernetes.io/name: postgres-initdb
+  app.kubernetes.io/instance: netbox
+  app.kubernetes.io/managed-by: "kustomize"
