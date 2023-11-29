@@ -60,6 +60,11 @@ spec:
     ingress:
       main:
         enabled: true
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/group: "Apps"
+          gethomepage.dev/icon: wikijs.png
+          gethomepage.dev/name: "Wiki"
         hosts:
           - host: &host-main "{{ .Release.Name }}.zynthovian.xyz"
             paths:
