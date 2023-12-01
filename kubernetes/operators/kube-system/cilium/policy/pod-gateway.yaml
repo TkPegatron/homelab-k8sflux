@@ -36,7 +36,8 @@ spec:
               protocol: UDP
           rules:
             dns:
-              - matchPattern: "*"
+              - matchPattern: "*.*.*.cluster.local"
+              - matchPattern: "*.zynthovian.xyz"
     - toEndpoints:
         - matchLabels:
             k8s:app.kubernetes.io/instance: nginx-internal
@@ -57,6 +58,7 @@ spec:
     - toEndpoints:
         - matchLabels:
             cnpg.io/cluster: postgres
+            io.kubernetes.pod.namespace: cnpg
       toPorts:
         - ports:
             - port: '5432'
