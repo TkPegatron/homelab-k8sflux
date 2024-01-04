@@ -18,7 +18,7 @@ spec:
     cacheStorageClassName: local-path
     volumeSnapshotClassName: csi-ceph-blockpool
     customCA:
-      secretName: syncthing-restic-config
+      secretName: vaultwarden-restic-config
       key: CUSTOM_CA_CRT
     retain:
       daily: 7
