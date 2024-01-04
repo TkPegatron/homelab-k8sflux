@@ -26,6 +26,11 @@ spec:
   egress:
     - toEndpoints:
         - {}
+    - toCIDRSet:
+        - cidr:  172.16.0.0/30
+      toPorts:
+        - ports:
+          - port: "53"
     - toEndpoints:
         - matchLabels:
             io.kubernetes.pod.namespace: kube-system
@@ -34,10 +39,6 @@ spec:
         - ports:
             - port: "53"
               protocol: UDP
-          rules:
-            dns:
-              - matchPattern: "*.*.*.cluster.local"
-              - matchPattern: "*.zynthovian.xyz"
     - toEndpoints:
         - matchLabels:
             k8s:app.kubernetes.io/instance: nginx-internal
