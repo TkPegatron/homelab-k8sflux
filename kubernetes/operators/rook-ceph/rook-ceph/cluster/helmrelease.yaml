@@ -129,7 +129,7 @@ spec:
                   encryptedDevice: "true"
           - name: amd64-server-b5915c.int.zynthovian.xyz
             devices:
-              #- name: /dev/mapper/b5915c-rook
+              - name: /dev/mapper/b5915c-rook
               - name: /dev/sda
                 config:
                   encryptedDevice: "true"
