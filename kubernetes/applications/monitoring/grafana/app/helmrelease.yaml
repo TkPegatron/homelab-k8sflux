@@ -90,6 +90,38 @@ spec:
             editable: true
             options:
               path: /var/lib/grafana/dashboards/default
+          - name: ceph
+            orgId: 1
+            folder: Ceph
+            type: file
+            disableDeletion: false
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/ceph
+          - name: flux
+            orgId: 1
+            folder: Flux
+            type: file
+            disableDeletion: false
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/flux
+          - name: kubernetes
+            orgId: 1
+            folder: Kubernetes
+            type: file
+            disableDeletion: false
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/kubernetes
+          - name: nginx
+            orgId: 1
+            folder: Nginx
+            type: file
+            disableDeletion: false
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/nginx
     datasources:
       datasources.yaml:
         apiVersion: 1
@@ -102,7 +134,7 @@ spec:
             type: prometheus
             uid: prometheus
             access: proxy
-            url: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090
+            url: http://kube-prometheus-stack-prometheus.prometheus-system.svc.cluster.local:9090
             isDefault: true
           - name: Loki
             type: loki
@@ -115,7 +147,7 @@ spec:
             type: alertmanager
             uid: alertmanager
             access: proxy
-            url: http://kube-prometheus-stack-alertmanager.monitoring.svc.cluster.local:9093
+            url: http://kube-prometheus-stack-alertmanager.prometheus-system.svc.cluster.local:9093
             jsonData:
               implementation: prometheus
     dashboards:
