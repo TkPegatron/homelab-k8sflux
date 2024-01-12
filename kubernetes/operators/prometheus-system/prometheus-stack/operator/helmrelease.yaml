@@ -208,6 +208,7 @@ spec:
         serviceMonitorSelectorNilUsesHelmValues: false
         podMonitorSelectorNilUsesHelmValues: false
         probeSelectorNilUsesHelmValues: false
+        scrapeConfigSelectorNilUsesHelmValues: false
         retention: 2d
         retentionSize: 15GB
         enableAdminAPI: true
