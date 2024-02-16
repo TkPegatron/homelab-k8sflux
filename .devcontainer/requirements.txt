@@ -2,4 +2,4 @@ openshift==0.13.2
 resolvelib<1.0.2,>=1.0.1
 black>=22.8.0
 jsonschema>=4.10.0
-netaddr==0.10.1
+netaddr==1.1.0
