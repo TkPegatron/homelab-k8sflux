@@ -33,7 +33,7 @@ spec:
         maxParallel: 8
       serverName: &currentCluster ea72e01b-9f39-47c2-b24d-f2f960122776
       destinationPath: s3://postgres-cluster/
-      endpointURL: http://xenia.zynthovian.xyz:9090
+      endpointURL: https://xenia.zynthovian.xyz:9090
       endpointCA:
         name: homelab-ca
         key: ca-cert
