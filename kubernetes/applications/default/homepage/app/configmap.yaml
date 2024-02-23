@@ -30,10 +30,10 @@ data:
   services.yaml: ""
   settings.yaml: |
     background:
-      image: '/images/ea2c05c2f21d5a97e409dd0644c49deea55df80e.jpg'
+      image: '/images/1673943777262932.jpg'
       blur: sm
       opacity: 100
-    theme: dark
+    theme: light
   widgets.yaml: |
     #- kubernetes:
     #    cluster:

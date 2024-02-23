@@ -58,8 +58,6 @@ spec:
     ingress:
       main:
         enabled: true
-        annotations:
-          external-dns.alpha.kubernetes.io/target: nginx.zynthovian.xyz
         hosts:
           - host: &host "{{ .Release.Name }}.zynthovian.xyz"
             paths:
