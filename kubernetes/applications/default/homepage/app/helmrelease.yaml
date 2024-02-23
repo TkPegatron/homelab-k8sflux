@@ -50,10 +50,12 @@ spec:
     #    supplementalGroups: [10000]
 
     ingress:
+      annotations:
+        external-dns.alpha.kubernetes.io/target: nginx.zynthovian.xyz
       main:
         enabled: true
         hosts:
-          - host: &host-main homepage.zynthovian.xyz
+          - host: &host "{{ .Release.Name }}.zynthovian.xyz"
             paths:
               - path: /
                 pathType: Prefix
@@ -61,7 +63,7 @@ spec:
                   name: main
         tls:
           - hosts:
-            - *host-main
+            - *host
 
     persistence:
       images:
