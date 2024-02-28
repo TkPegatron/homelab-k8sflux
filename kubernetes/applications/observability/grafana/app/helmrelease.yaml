@@ -4,7 +4,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
   name: grafana
-  namespace: monitoring
+  namespace: observability
 spec:
   interval: 30m
   chart:
@@ -140,7 +140,7 @@ spec:
             type: loki
             uid: loki
             access: proxy
-            url: http://loki-gateway.monitoring.svc.cluster.local
+            url: http://loki-gateway.observability.svc.cluster.local
             jsonData:
               maxLines: 250
           - name: Alertmanager
