@@ -74,7 +74,7 @@ spec:
           max_outstanding_per_tenant: 4096
         schema_config:
           configs:
-            - from: "2024-03-01" # quote
+            - from: "2024-02-27" # quote
               store: boltdb-shipper
               object_store: s3
               schema: v12
