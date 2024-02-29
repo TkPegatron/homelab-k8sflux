@@ -1,0 +1,88 @@
+---
+# yaml-language-server: $schema=none
+data_dir: /vector-data-dir
+api:
+  enabled: true
+  address: 0.0.0.0:8686
+
+enrichment_tables:
+  geoip_table:
+    type: geoip
+    path: /usr/share/GeoIP/GeoLite2-City.mmdb
+
+#
+# Sources
+#
+
+sources:
+  syslog_source:
+    type: syslog
+    address: 0.0.0.0:4514
+    mode: tcp
+
+#
+# Transforms
+#
+
+transforms:
+  netfilter_route:
+    type: route
+    inputs: ["syslog_source"]
+    route:
+      firewall: |
+        .facility == "kern" && match!(.message, r'^nft\.(.*)')
+
+  netfilter_remap:
+    type: remap
+    inputs: ["netfilter_route.firewall"]
+    source: |
+      # Parse firewall rule message
+      split_message, split_err = parse_regex(.message, r'^(?P<rule>.*?) (?P<fields>.*)')
+      if split_err != null {
+          abort
+      }
+      # Extract separate fields from message
+      split_message.fields, split_err = strip_whitespace(split_message.fields)
+      if split_err != null {
+          abort
+      }
+      .message, parse_err = parse_key_value(split_message.fields, whitespace: "strict")
+      if parse_err != null {
+          abort
+      }
+      # Add more information about the triggered rule
+      .message.RULE, parse_err = parse_regex(split_message.rule, r'^nft\.(?P<table>\w+)\.(?P<hook>\w+)\.(?P<chain>\w+)\.(?P<action>\w+)$')
+      if parse_err != null {
+          abort
+      }
+
+  netfilter_wan_route:
+    type: route
+    inputs: ["netfilter_remap"]
+    route:
+      from_wan: .message.RULE.from_zone == "wan"
+      from_win: match!(.message.RULE.chain, r'')
+
+  netfilter_geoip_remap:
+    type: remap
+    inputs: ["netfilter_wan_route.from_wan"]
+    source: |
+      .geoip = get_enrichment_table_record!(
+          "geoip_table", {
+              "ip": .message.SRC
+          }
+      )
+
+sinks:
+  syslog_loki:
+    inputs:
+      - "syslog_source"
+      - "netfilter_geoip_remap"
+    type: loki
+    endpoint: http://loki-gateway.observability.svc.cluster.local
+    encoding: { codec: json }
+    out_of_order_action: accept
+    remove_label_fields: true
+    remove_timestamp: true
+    labels:
+      hostname: '{{ host }}'

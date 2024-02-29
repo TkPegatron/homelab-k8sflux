@@ -19,5 +19,6 @@ data:
   # --[ Service LBIPs ]
   SVC_NGINX_ADDR:       "172.21.0.1"
   SVC_SYNCTHING_ADDR:   "172.21.0.2"
+  SVC_VECTOR_ADDR:      "172.21.0.3"
   SVC_POD_GATEWAY_ADDR: "172.21.0.20"
   SVC_SYSLOG_ADDR:      "172.21.0.50"
