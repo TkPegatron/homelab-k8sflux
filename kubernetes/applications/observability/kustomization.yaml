@@ -8,4 +8,5 @@ resources:
   # Flux-Kustomizations
   - ./grafana/ks.yaml
   - ./loki/ks.yaml
+  - ./snmp-exporter/ks.yaml
   - ./vector/ks.yaml
