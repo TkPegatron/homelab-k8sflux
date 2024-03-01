@@ -67,7 +67,7 @@ spec:
           http:
             port: 8686
           syslog:
-            port: 4514
+            port: 10514
             protocol: UDP
     persistence:
       config:

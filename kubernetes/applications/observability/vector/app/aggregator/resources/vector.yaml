@@ -17,8 +17,8 @@ enrichment_tables:
 sources:
   syslog_source:
     type: syslog
-    address: 0.0.0.0:4514
-    mode: tcp
+    address: 0.0.0.0:10514
+    mode: udp
 
 #
 # Transforms
@@ -51,7 +51,7 @@ transforms:
           abort
       }
       # Add more information about the triggered rule
-      .message.RULE, parse_err = parse_regex(split_message.rule, r'^nft\.(?P<table>\w+)\.(?P<hook>\w+)\.(?P<chain>\w+)\.(?P<action>\w+)$')
+      .message.RULE, parse_err = parse_regex(split_message.rule, r'^nft\.(?P<hook>\w+)\.(?P<src_zone>\w+)\.(?P<verdict>\w+)$')
       if parse_err != null {
           abort
       }
@@ -60,8 +60,7 @@ transforms:
     type: route
     inputs: ["netfilter_remap"]
     route:
-      from_wan: .message.RULE.from_zone == "wan"
-      from_win: match!(.message.RULE.chain, r'')
+      from_wan: .message.RULE.src_zone == "wan"
 
   netfilter_geoip_remap:
     type: remap
