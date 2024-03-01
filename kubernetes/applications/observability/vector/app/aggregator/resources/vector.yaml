@@ -18,7 +18,7 @@ sources:
   syslog_source:
     type: syslog
     address: 0.0.0.0:10514
-    mode: udp
+    mode: tcp
 
 #
 # Transforms
