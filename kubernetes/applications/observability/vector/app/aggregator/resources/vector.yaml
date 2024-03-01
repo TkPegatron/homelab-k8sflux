@@ -1,6 +1,8 @@
 ---
 # yaml-language-server: $schema=none
 data_dir: /vector-data-dir
+timezone: "America/Detroit"
+
 api:
   enabled: true
   address: 0.0.0.0:8686
