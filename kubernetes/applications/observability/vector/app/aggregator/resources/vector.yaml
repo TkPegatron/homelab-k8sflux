@@ -81,7 +81,7 @@ transforms:
 sinks:
   syslog_loki:
     inputs:
-      - "syslog_source"
+      #- "syslog_source"
       - "netfilter_geoip_remap"
     type: loki
     endpoint: http://loki-gateway.observability.svc.cluster.local:80
