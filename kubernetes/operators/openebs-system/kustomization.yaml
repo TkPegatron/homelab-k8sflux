@@ -6,8 +6,4 @@ resources:
   # Pre Flux-Kustomizations
   - ./namespace.yaml
   # Flux-Kustomizations
-  - ./cilium/ks.yaml
-  - ./descheduler/ks.yaml
-  - ./metrics-server/ks.yaml
-  - ./node-feature-discovery/ks.yaml
-  - ./snapshot-controller/ks.yaml
+  - ./openebs/ks.yaml

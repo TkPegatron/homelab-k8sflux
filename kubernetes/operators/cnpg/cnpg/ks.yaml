@@ -28,7 +28,7 @@ metadata:
   namespace: flux-system
 spec:
   dependsOn:
-    - name: cluster-operators-local-path-provisioner
+    - name: openebs
     - name: cluster-operators-cnpg-operator
   path: ./kubernetes/operators/cnpg/cnpg/cluster
   prune: true

@@ -15,7 +15,7 @@ spec:
     repository: vaultwarden-restic-config
     storageClassName: ceph-block
     cacheCapacity: 1Gi
-    cacheStorageClassName: local-path
+    cacheStorageClassName: openebs-hostpath
     volumeSnapshotClassName: csi-ceph-blockpool
     customCA:
       secretName: vaultwarden-restic-config

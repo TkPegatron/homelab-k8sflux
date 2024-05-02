@@ -23,8 +23,8 @@ spec:
   uninstall:
     keepHistory: false
   dependsOn:
-    - name: local-path-provisioner
-      namespace: kube-system
+    - name: openebs
+      namespace: openebs-system
     - name: rook-ceph-cluster
       namespace: rook-ceph
   valuesFrom:
@@ -140,7 +140,7 @@ spec:
     read:
       replicas: 2
       persistence:
-        storageClass: local-path
+        storageClass: openebs-hostpath
       extraVolumeMounts:
         - name: rules
           mountPath: /rules
@@ -150,11 +150,11 @@ spec:
     write:
       replicas: 2
       persistence:
-        storageClass: local-path
+        storageClass: openebs-hostpath
     backend:
       replicas: 2
       persistence:
-        storageClass: local-path
+        storageClass: openebs-hostpath
       extraVolumeMounts:
         #- name: rules
         #  mountPath: /rules/fake
