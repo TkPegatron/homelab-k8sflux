@@ -1,23 +1,22 @@
 ---
-# yaml-language-server: $schema=https://kubernetes-schemas.zynthovian.xyz/helmrelease_v2beta1.json
-apiVersion: helm.toolkit.fluxcd.io/v2beta2
+# yaml-language-server: $schema=https://kubernetes-schemas.zynthovian.xyz/helm.toolkit.fluxcd.io/helmrelease_v2beta1.json
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: vaultwarden
   namespace: default
 spec:
-  interval: 15m
+  interval: 30m
   chart:
     spec:
       chart: app-template
-      version: 1.5.1
+      version: 3.1.0
       sourceRef:
         kind: HelmRepository
         name: bjw-s
         namespace: flux-system
-  maxHistory: 3
+  maxHistory: 2
   install:
-    createNamespace: true
     remediation:
       retries: 3
   upgrade:
@@ -27,46 +26,57 @@ spec:
   uninstall:
     keepHistory: false
   values:
-    image:
-      repository: ghcr.io/dani-garcia/vaultwarden
-      tag: 1.30.5-alpine@sha256:9f4c1ea3601e398656992f738af9f84faf7a6d68299b2deaf049580e5da0d37f
-    env:
-      TZ: America/Detroit
-      SIGNUPS_ALLOWED: "false"
-      SHOW_PASSWORD_HINT: "false"
-      DOMAIN: https://vault.zynthovian.xyz
-      ADMIN_TOKEN:
-        valueFrom:
-          secretKeyRef:
-            name: vaultwarden-secret
-            key: admin-token
+    controllers:
+      main:
+        type: deployment
+        containers:
+          main:
+            image:
+              repository: ghcr.io/dani-garcia/vaultwarden
+              tag: 1.30.5-alpine@sha256:9f4c1ea3601e398656992f738af9f84faf7a6d68299b2deaf049580e5da0d37f
+            env:
+              TZ: America/Detroit
+              SIGNUPS_ALLOWED: "false"
+              SHOW_PASSWORD_HINT: "false"
+              DOMAIN: https://vault.zynthovian.xyz
+              ADMIN_TOKEN:
+                valueFrom:
+                  secretKeyRef:
+                    name: vaultwarden-secret
+                    key: admin-token
+
+    persistence:
+      data:
+        enabled: true
+        existingClaim: vaultwarden
+        globalMounts:
+          - path: '/data'
+
     service:
       main:
+        enabled: true
+        controller: main
         ports:
           http:
             port: 80
+
     ingress:
       main:
         enabled: true
-        ingressClassName: nginx
+        className: nginx
         annotations:
-          hajimari.io/appName: "Vaultwarden"
-          hajimari.io/icon: mdi:account-lock
           gethomepage.dev/name: "Vaultwarden"
           gethomepage.dev/group: "Apps"
           gethomepage.dev/icon: vaultwarden.png
           gethomepage.dev/enabled: "true"
           external-dns.alpha.kubernetes.io/target: nginx.zynthovian.xyz
         hosts:
-          - host: &host vault.zynthovian.xyz
+          - host: &host "{{ .Release.Name }}.zynthovian.xyz"
             paths:
               - path: /
                 pathType: Prefix
+                service:
+                  identifier: main
         tls:
           - hosts:
               - *host
-    persistence:
-      data:
-        enabled: true
-        existingClaim: vaultwarden
-        mountPath: /data
