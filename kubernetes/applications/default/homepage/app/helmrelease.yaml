@@ -35,7 +35,7 @@ spec:
           main:
             image:
               repository: ghcr.io/gethomepage/homepage
-              tag: latest@sha256:e0d26bb0e1a03efeddd20ac0be2b03858fae93f3c95054f0d0a91a1405da82a3
+              tag: latest@sha256:1076b12ab95d95790fb24b5be85c090912c6d379533e30f3756b90857dfa32c6
               pullPolicy: IfNotPresent
 
     #defaultPodOptions:
