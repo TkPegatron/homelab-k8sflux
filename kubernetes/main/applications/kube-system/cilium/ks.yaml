@@ -3,15 +3,19 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: cluster-operators-cilium
+  name: &app cilium
   namespace: flux-system
 spec:
-  path: ./kubernetes/main/operators/kube-system/cilium/operator
+  targetNamespace: kube-system
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  path: ./kubernetes/main/applications/kube-system/cilium/operator
   prune: false # never should be deleted
   sourceRef:
     kind: GitRepository
     name: cluster-flux-public
-  wait: false
+  wait: true
   interval: 30m
   retryInterval: 1m
   timeout: 5m
@@ -20,12 +24,16 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: cluster-operators-cilium-configuration
+  name: &app cilium-config
   namespace: flux-system
 spec:
+  targetNamespace: kube-system
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
   dependsOn:
-    - name: cluster-operators-cilium
-  path: ./kubernetes/main/operators/kube-system/cilium/configuration
+    - name: cilium
+  path: ./kubernetes/main/applications/kube-system/cilium/configuration
   prune: false # never should be deleted
   sourceRef:
     kind: GitRepository
@@ -39,12 +47,16 @@ spec:
 # apiVersion: kustomize.toolkit.fluxcd.io/v1
 # kind: Kustomization
 # metadata:
-#   name: cluster-operators-cilium-policy
+#   name: &app cilium-policy
 #   namespace: flux-system
 # spec:
+#   targetNamespace: kube-system
+#   commonMetadata:
+#     labels:
+#       app.kubernetes.io/name: *app
 #   dependsOn:
-#     - name: cluster-operators-cilium
-#   path: ./kubernetes/main/operators/kube-system/cilium/policy
+#     - name: cilium
+#   path: ./kubernetes/main/applications/kube-system/cilium/policy
 #   prune: false # never should be deleted
 #   sourceRef:
 #     kind: GitRepository
