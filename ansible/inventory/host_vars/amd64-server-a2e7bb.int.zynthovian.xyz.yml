@@ -13,5 +13,5 @@ nbde_client_bindings:
       - http://172.22.0.1:6830
 
 ceph_drives:
-  - /dev/mapper/rook_nvme
-  - /dev/mapper/rook_ssd
+  - /dev/mapper/a2e7bb-rook
+  - /dev/sda
