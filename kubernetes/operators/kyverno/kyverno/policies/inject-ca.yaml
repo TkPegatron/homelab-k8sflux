@@ -1,0 +1,125 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: default
+  name: personal-certificate-authority
+data:
+  ca-cert-personal.pem: |
+    -----BEGIN CERTIFICATE-----
+    MIIB4DCCAWYCFFY6UiHBqKEcpxxxo4e/+86dtwxWMAoGCCqGSM49BAMCMFQxCzAJ
+    BgNVBAYTAlVTMQ0wCwYDVQQIDARPaGlvMQ8wDQYDVQQHDAZNYXVtZWUxJTAjBgNV
+    BAMMHEVsbGlhbmEgUGVycnkgQ2VydCBBdXRob3JpdHkwHhcNMjMxMTIyMjIwNzUz
+    WhcNNDMxMTI0MjIwNzUzWjBUMQswCQYDVQQGEwJVUzENMAsGA1UECAwET2hpbzEP
+    MA0GA1UEBwwGTWF1bWVlMSUwIwYDVQQDDBxFbGxpYW5hIFBlcnJ5IENlcnQgQXV0
+    aG9yaXR5MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAELHgnHqKNZs6J7isa26l6BtUE
+    Ov9GCb0VKZel+NttlHRAHXj9RdaVZAu1WROun5PBtyq8hik402PG7BGWqTJcvCsp
+    zzB2sW2mmUfvg/X2b3gKof9huigSA5x14VzNf4LSMAoGCCqGSM49BAMCA2gAMGUC
+    MDh2NRy+vdps1JwsowN5odNautrNCHzlSOWJVFjXHl7bQJgPtCa7zThwNzYLakfx
+    lAIxANW89E7najBVzQ3GRwHvJYHE5QlYIgtVv6kFjEZErnPikShQt5HUm3B19puQ
+    XKNuXw==
+    -----END CERTIFICATE-----
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: reflect-personal-certificate-authority
+  annotations:
+    policies.kyverno.io/subject: Reflect-CertAuthority
+    policies.kyverno.io/description: |
+      Reflect personal cert authority public key to all namespaces.
+    policies.kyverno.io/category: reflectors
+spec:
+  generateExistingOnPolicyUpdate: true
+  background: true
+  rules:
+    - name: reflect-cert-authority
+      match:
+        any:
+          - resources:
+              kinds: ['Namespace']
+              #names: ['elliana']
+      generate:
+        apiVersion: v1
+        clone:
+          name: personal-certificate-authority
+          namespace: default
+        kind: ConfigMap
+        name: personal-certificate-authority
+        namespace: '{{ request.object.metadata.name }}'
+        synchronize: true
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: mutate-ca-certs
+  annotations:
+    policies.kyverno.io/category: mutations
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      This policy will mutate incoming pods to include a predefined certificate authority within its native trust chain.
+
+        1) An initcontainer will be injected within the pod which runs `update-ca-certificates`
+            The initcontainer will mount CA certs from a config map at /usr/local/share/ca-certificates/
+            The initcontainer will copy it's /etc/ssl/certs/ directory into an emptyDir volume
+        2) Containers within the pod will be modified to mount the emptyDir volume as /etc/ssl/certs/
+        3) Applications which use the native certificate store will trust certificates signed by the defined cert authority
+spec:
+  rules:
+    - name: kyverno-ca-initcontainer
+      match:
+        any:
+          - resources:
+              kinds: [ Pod ]
+              selector:
+                matchLabels:
+                  domain-certs-map.cluster.arpa: 'true'
+      mutate:
+        patchStrategicMerge:
+          spec:
+            volumes:
+              - name: kyverno-ca
+                emptyDir: {}
+              - name: kyverno-ca-map
+                configMap:
+                  name: personal-certificate-authority
+            initContainers:
+              - name: kyverno-inject-ca
+                image: ghcr.io/tkpegatron/alpine:3.19.0
+                command:
+                  - /bin/sh
+                  - -c
+                  - |
+                    echo "Updating CA Certificates"
+                    update-ca-certificates
+                    echo "Copying CA Bundle to volume"
+                    cp -r /etc/ssl/certs/* /mnt
+                    echo "Complete!"
+                volumeMounts:
+                  - name: kyverno-ca
+                    mountPath: /mnt
+                  - name: kyverno-ca-map
+                    mountPath: /usr/local/share/ca-certificates/ca-cert-personal.pem
+                    subPath: ca-cert-personal.pem
+    - name: kyverno-ca-volumemounts
+      match:
+        any:
+          - resources:
+              kinds: [ Pod ]
+              selector:
+                matchLabels:
+                  domain-certs-map.cluster.arpa: 'true'
+      mutate:
+        foreach:
+          - list: "request.object.spec.containers"
+            patchStrategicMerge:
+              spec:
+                containers:
+                  - name: "{{ element.name }}"
+                    volumeMounts:
+                      - name: kyverno-ca
+                        mountPath: /etc/ssl/certs/
+                      - name: kyverno-ca-map
+                        mountPath: /usr/local/share/ca-certificates/ca-cert-personal.pem
+                        subPath: ca-cert-personal.pem
