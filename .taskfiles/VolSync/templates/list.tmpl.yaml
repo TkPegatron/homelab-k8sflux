@@ -2,8 +2,8 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: "list-${rsrc}-${ts}"
-  namespace: "${namespace}"
+  name: ${job}
+  namespace: ${ns}
 spec:
   ttlSecondsAfterFinished: 3600
   template:
@@ -11,13 +11,14 @@ spec:
       automountServiceAccountToken: false
       restartPolicy: OnFailure
       containers:
-        - name: list
+        - name: main
           image: docker.io/restic/restic:0.16.4
           args: ["snapshots"]
           envFrom:
             - secretRef:
-                name: "${rsrc}-restic-config"
-#TODO   The data below should be templated and excluded if CUSTOM_CA_CRT is not in ${rsrc}-restic-config
+                #name: ${app}-volsync-secret
+                name: ${app}-restic-config
+          resources: {}
           env:
             - name: RESTIC_CACERT
               value: /run/secrets/custom_ca
@@ -28,7 +29,7 @@ spec:
       volumes:
         - name: custom-ca
           secret:
-            secretName: "${rsrc}-restic-config"
+            secretName: "${app}-restic-config"
             items:
               - key: CUSTOM_CA_CRT
                 path: custom_ca
