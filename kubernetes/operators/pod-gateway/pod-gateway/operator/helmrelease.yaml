@@ -29,7 +29,7 @@ spec:
   values:
     DNSPolicy: ClusterFirst
     # -- Namespaces that might contain routed PODs and therefore
-    # require a copy of the gneerated settings configmap.
+    # require a copy of the generated settings configmap.
     routed_namespaces:
       - default
     settings:
@@ -88,6 +88,8 @@ spec:
             value: "on"
           - name: DOT
             value: "off"
+          - name: UPDATER_PERIOD
+            value: '24h'
           - name: OPENVPN_USER
             valueFrom:
               secretKeyRef:
@@ -108,3 +110,29 @@ spec:
               - NET_ADMIN
       netshoot:
         enabled: true
+  postRenderers:
+    - kustomize:
+        patchesStrategicMerge:
+          - apiVersion: apps/v1
+            kind: Deployment
+            metadata:
+              name: pod-gateway
+            spec:
+              template:
+                spec:
+                  volumes:
+                    - name: server-cache
+                      emptyDir: {}
+                  initContainers:
+                    - name: gluetun-updater
+                      image: >-
+                        ghcr.io/qdm12/gluetun:v3.38.0@sha256:5522794f5cce6d84bc7f06b1e3a3b836ede9100c64aec94543cb503bb2ecb72f
+                      args: [ "update", "-enduser", "-providers", "ivpn" ]
+                      volumeMounts:
+                        - mountPath: /gluetun
+                          name: server-cache
+                  containers:
+                    - name: gluetun
+                      volumeMounts:
+                        - mountPath: /gluetun
+                          name: server-cache
