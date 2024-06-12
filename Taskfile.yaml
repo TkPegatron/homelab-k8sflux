@@ -14,7 +14,7 @@ includes:
   #ansible: .taskfiles/Ansible
   #bootstrap: .taskfiles/Bootstrap
   #external-secrets: .taskfiles/ExternalSecrets
-  #flux: .taskfiles/Flux
+  flux: .taskfiles/Flux
   #kubernetes: .taskfiles/Kubernetes
   #rook: .taskfiles/Rook
   #talos: .taskfiles/Talos
