@@ -5,7 +5,7 @@
 ### Install Flux
 
 ```sh
-kubectl apply --server-side --kustomize ./kubernetes/bootstrap/flux
+kubectl apply --server-side --kustomize ./kubernetes/main/bootstrap/flux
 ```
 
 ### Apply Cluster Configuration
@@ -13,16 +13,16 @@ kubectl apply --server-side --kustomize ./kubernetes/bootstrap/flux
 _These cannot be applied with `kubectl` directly due to being encrypted with sops_
 
 ```sh
-sops --decrypt kubernetes/bootstrap/flux/age-key.sops.yaml | kubectl apply -f -
-sops --decrypt kubernetes/bootstrap/flux/git-deploy-key.sops.yaml | kubectl apply -f -
-sops --decrypt kubernetes/flux-config/cluster-vars/cluster-secrets.sops.yaml | kubectl apply -f -
-kubectl apply -f kubernetes/flux-config/cluster-vars/cluster-settings.yaml
+sops --decrypt kubernetes/main/bootstrap/flux/age-key.sops.yaml | kubectl apply -f -
+sops --decrypt kubernetes/main/bootstrap/flux/git-deploy-key.sops.yaml | kubectl apply -f -
+sops --decrypt kubernetes/main/flux-config/cluster-vars/cluster-secrets.sops.yaml | kubectl apply -f -
+kubectl apply -f kubernetes/main/flux-config/cluster-vars/cluster-settings.yaml
 ```
 
 ### Kick off Flux applying this repository
 
 ```sh
-kubectl apply --server-side --kustomize ./kubernetes/flux-config/operator
+kubectl apply --server-side --kustomize ./kubernetes/main/flux-config/operator
 ```
 
 ## Labels
