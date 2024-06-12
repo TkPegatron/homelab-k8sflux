@@ -9,7 +9,8 @@
 		}
 	},
 	"runArgs": [
-		"--userns=keep-id"
+		"--userns=keep-id",
+		"--dns=172.22.0.1"
 	],
 	"workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,Z",
     "workspaceFolder": "/workspace",

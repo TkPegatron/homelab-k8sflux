@@ -1,44 +1,31 @@
-ARG VARIANT=3.20
-FROM docker.io/library/alpine:${VARIANT}
+FROM ghcr.io/tkpegatron/opsdev:rolling
 
-# -{ ENV: Consume Environment variables }
+# -{ ENV: Consume VSCode Environment variables }
 ARG USERNAME=vscode
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 ARG TZ=America/Detroit
 
-# -{ MOD: Add repositories }
-RUN /bin/true \
-    && echo "https://dl-cdn.alpinelinux.org/alpine/edge/testing/" >> /etc/apk/repositories
-
-# -{ PMINST: Important system utilities }
-RUN apk add --upgrade --no-cache \
-    util-linux pciutils usbutils coreutils binutils findutils grep iproute2
-
-RUN apk add --upgrade --no-cache dog
-
-RUN apk add --upgrade \
-    zsh bat direnv curl exa stow file git skim neovim starship tzdata \
-    ca-certificates gpg gpg-agent openssh-client libcrypto3 \
-    python3 py3-pip sshpass pcre rsync envsubst
-
-# Environment tools (For Terraform, Kubernetes & Ansible GitOps workflow)
-RUN apk add --upgrade --no-cache \
-    kubectl kustomize helm ansible terraform age pre-commit jq yq \
-    yamllint ansible-lint ipcalc sops flux ceph17-mgr-dashboard
-
-# Install go-task
-RUN sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
-
 # -{ MOD: Configure userspace environment }
-
 RUN \
     # Set the container's timezone \
     ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone; \
     # Add local user account inside container \
     adduser --shell /bin/zsh --disabled-password $USERNAME
 
+# Install Krew and Krew Accessories
+run set -x; cd "$(mktemp -d)" && \
+    OS="$(uname | tr '[:upper:]' '[:lower:]')" && \
+    ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')" && \
+    KREW="krew-${OS}_${ARCH}" && \
+    curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/${KREW}.tar.gz" && \
+    tar zxvf "${KREW}.tar.gz" && \
+    mv ./"${KREW}" /usr/bin/kubectl-krew
+
 USER $USERNAME
+
+
+ENV PATH="$PATH:/home/$USERNAME/.local/bin"
 
 # Install Python Dependencies
 COPY ./requirements.txt /opt/requirements.txt
