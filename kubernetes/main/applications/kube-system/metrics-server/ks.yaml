@@ -10,7 +10,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  path: ./kubernetes/applications/kube-system/metrics-server/deployment
+  path: ./kubernetes/main/applications/kube-system/metrics-server/deployment
   prune: true
   sourceRef:
     kind: GitRepository
