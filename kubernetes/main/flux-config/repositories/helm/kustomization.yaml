@@ -6,7 +6,7 @@ resources:
   #- ./angelnu.yaml
   #- ./backube.yaml
   #- ./bjw-s.yaml
-  #- ./cilium.yaml
+  - ./cilium.yaml
   #- ./cloudnative-pg.yaml
   #- ./coredns.yaml
   #- ./descheduler.yaml
