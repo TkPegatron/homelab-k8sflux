@@ -26,24 +26,6 @@ spec:
   uninstall:
     keepHistory: false
   values:
-    autoDirectNodeRoutes: true
-    bpf:
-      masquerade: true
-    bgp:
-      enabled: false
-    bgpControlPlane:
-      enabled: true
-    cluster:
-      name: kubernetes
-      id: 1
-    containerRuntime:
-      integration: containerd
-      socketPath: /var/run/k3s/containerd/containerd.sock
-    endpointRoutes:
-      enabled: true
-    bandwidthManager:
-      enabled: true
-      bbr: true
     hubble:
       enabled: true
       metrics:
@@ -78,17 +60,6 @@ spec:
           tls:
             - hosts:
                 - *host
-    ipam:
-      mode: kubernetes
-    ipv4NativeRoutingCIDR: 10.32.0.0/16
-    k8sServiceHost: 172.22.0.1
-    k8sServicePort: 6443
-    kubeProxyReplacement: strict
-    kubeProxyReplacementHealthzBindAddr: 0.0.0.0:10256
-    loadBalancer:
-      algorithm: maglev
-      mode: dsr
-    localRedirectPolicy: true
     operator:
       rollOutPods: true
       prometheus:
@@ -108,7 +79,3 @@ spec:
       enabled: true
       annotations:
         grafana_folder: Cilium
-    rollOutCiliumPods: true
-    securityContext:
-      privileged: true
-    routingMode: "native"
