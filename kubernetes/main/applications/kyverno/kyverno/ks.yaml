@@ -2,10 +2,10 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: cluster-operators-kyverno
+  name: kyverno
   namespace: flux-system
 spec:
-  path: ./kubernetes/operators/kyverno/kyverno/operator
+  path: ./kubernetes/main/applications/kyverno/kyverno/operator
   prune: true
   sourceRef:
     kind: GitRepository
@@ -15,6 +15,7 @@ spec:
       kind: HelmRelease
       name: kyverno
       namespace: kyverno
+  wait: false
   interval: 30m
   retryInterval: 1m
   timeout: 3m
@@ -22,12 +23,12 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: cluster-policies-kyverno
+  name: kyverno-policies
   namespace: flux-system
 spec:
   dependsOn:
-    - name: cluster-operators-kyverno
-  path: ./kubernetes/operators/kyverno/kyverno/policies
+    - name: kyverno
+  path: ./kubernetes/main/applications/kyverno/kyverno/policies
   prune: true
   sourceRef:
     kind: GitRepository
