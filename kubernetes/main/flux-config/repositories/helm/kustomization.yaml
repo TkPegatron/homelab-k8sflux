@@ -17,7 +17,7 @@ resources:
   - ./kyverno.yaml
   - ./metrics-server.yaml
   #- ./node-feature-discovery.yaml
-  #- ./openebs.yaml
+  - ./openebs.yaml
   #- ./pireaus.yaml
   #- ./prometheus-community.yaml
   #- ./rook-ceph.yaml
