@@ -19,6 +19,6 @@ resources:
   #- ./node-feature-discovery.yaml
   - ./openebs.yaml
   - ./piraeus.yaml
-  #- ./prometheus-community.yaml
+  - ./prometheus-community.yaml
   - ./rook-ceph.yaml
   - ./stakater.yaml
