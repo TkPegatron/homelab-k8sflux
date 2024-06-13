@@ -3,21 +3,18 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: cluster-operators-volsync
+  name: &app volsync
   namespace: flux-system
 spec:
-  dependsOn:
-    - name: cluster-operators-snapshot-controller
-  path: ./kubernetes/operators/volsync/volsync/operator
+  targetNamespace: volsync-system
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  path: ./kubernetes/main/applications/volsync-system/volsync/operator
   prune: true
   sourceRef:
     kind: GitRepository
     name: cluster-flux-public
-  healthChecks:
-    - apiVersion: helm.toolkit.fluxcd.io/v2beta1
-      kind: HelmRelease
-      name: volsync
-      namespace: volsync
   interval: 30m
   retryInterval: 1m
-  timeout: 3m
+  timeout: 5m
