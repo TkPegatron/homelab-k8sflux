@@ -20,5 +20,5 @@ resources:
   - ./openebs.yaml
   - ./piraeus.yaml
   #- ./prometheus-community.yaml
-  #- ./rook-ceph.yaml
+  - ./rook-ceph.yaml
   - ./stakater.yaml
