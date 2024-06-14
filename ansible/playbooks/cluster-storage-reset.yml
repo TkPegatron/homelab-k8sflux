@@ -6,6 +6,12 @@
   gather_facts: true
   any_errors_fatal: true
   tasks:
+
+    - name: delete /var/openebs/
+      ansible.builtin.file:
+        path: /var/openebs/
+        state: absent
+
     - name: Reset Ceph Config # noqa: ignore-errors
       ignore_errors: true
       block:
@@ -24,23 +30,23 @@
 
     - name: Wipe Disk Topology
       ignore_errors: true
-      when: luks_secondaries | default([]) | length > 0
+      when: ceph_disks | default([]) | length > 0
       block:
         - name: Wipe (sgdisk) # noqa: no-changed-when
           ansible.builtin.command: "sgdisk --zap-all {{ item.path }}"
-          loop: "{{ luks_secondaries }}"
+          loop: "{{ ceph_disks }}"
         - name: Wipe (dd) # noqa: no-changed-when
           ansible.builtin.command: "dd if=/dev/zero of={{ item.path }} bs=1M count=200 oflag=direct,dsync"
-          loop: "{{ luks_secondaries }}"
+          loop: "{{ ceph_disks }}"
         - name: Wipe (partprobe) # noqa: no-changed-when
           ansible.builtin.command: "partprobe {{ item.path }}"
-          loop: "{{ luks_secondaries }}"
+          loop: "{{ ceph_disks }}"
         - name: Wipe (blkdiscard) # noqa: no-changed-when
           ansible.builtin.command: "blkdiscard {{ item.path }}"
-          loop: "{{ luks_secondaries }}"
+          loop: "{{ ceph_disks }}"
         - name: Wipe (partprobe) # noqa: no-changed-when
           ansible.builtin.command: "partprobe {{ item.path }}"
-          loop: "{{ luks_secondaries }}"
+          loop: "{{ ceph_disks }}"
         - name: Reboot Nodes
           ansible.builtin.reboot:
 

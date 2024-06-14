@@ -12,6 +12,6 @@ nbde_client_bindings:
     servers:
       - http://172.22.0.1:6830
 
-ceph_drives:
-  - /dev/mapper/a2e7bb-rook
-  - /dev/sda
+ceph_disks:
+  - path: /dev/mapper/a2e7bb-rook
+  - path: /dev/sda
