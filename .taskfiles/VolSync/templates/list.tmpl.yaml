@@ -28,8 +28,8 @@ spec:
               mountPath: /run/secrets/custom_ca
       volumes:
         - name: custom-ca
-          secret:
-            secretName: "${app}-restic-config"
+          configMap:
+            name: "personal-certificate-authority"
             items:
-              - key: CUSTOM_CA_CRT
+              - key: ca-cert-personal.pem
                 path: custom_ca

@@ -211,10 +211,10 @@ tasks:
       - envsubst < <(cat {{.VOLSYNC_TEMPLATES_DIR}}/replicationdestination.tmpl.yaml) | kubectl --context {{.cluster}} apply -f -
       - bash {{.VOLSYNC_SCRIPTS_DIR}}/wait-for-job.sh {{.job}} {{.ns}} {{.cluster}}
       - kubectl --context {{.cluster}} -n {{.ns}} wait job/{{.job}} --for condition=complete --timeout=120m
-      - kubectl --context {{.cluster}} -n {{.ns}} delete replicationdestination {{.job}}
+      - kubectl --context {{.cluster}} -n {{.ns}} delete replicationdestination {{.app}}-task
     env: *env-vars
     vars:
-      job: volsync-dst-{{.app}}
+      job: volsync-dst-{{.app}}-task
 
   # Resume Flux ks and hr
   .resume:

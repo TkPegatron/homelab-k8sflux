@@ -2,13 +2,13 @@
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationDestination
 metadata:
-  name: ${job}
+  name: ${app}-task
   namespace: ${ns}
 spec:
   trigger:
     manual: restore-once
   restic:
-    repository: ${app}-volsync-secret
+    repository: ${app}-restic-config
     destinationPVC: ${claim}
     copyMethod: Direct
     storageClassName: ceph-block
@@ -25,6 +25,9 @@ spec:
     #   Do not restore snapshots made after the following RFC3339 Timestamp.
     #   date --rfc-3339=seconds (--utc)
     # restoreAsOf: "2022-12-10T16:00:00-05:00"
+    customCA:
+      configMapName: personal-certificate-authority
+      key: ca-cert-personal.pem
     moverSecurityContext:
       runAsUser: ${puid}
       runAsGroup: ${pgid}
