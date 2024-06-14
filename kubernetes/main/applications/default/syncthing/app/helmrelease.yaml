@@ -28,6 +28,14 @@ spec:
       namespace: rook-ceph
   values:
 
+    defaultPodOptions:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: "OnRootMismatch"
+
+
     controllers:
       main:
         enabled: true
@@ -59,11 +67,6 @@ spec:
               limits:
                 cpu: 1
                 memory: 500M
-            securityContext:
-              runAsUser: 1000
-              runAsGroup: 1000
-              fsGroup: 1000
-              fsGroupChangePolicy: "OnRootMismatch"
 
     service:
       main:
