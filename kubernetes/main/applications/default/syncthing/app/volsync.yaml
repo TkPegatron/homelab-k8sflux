@@ -4,7 +4,6 @@ apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
   name: syncthing
-  namespace: elliana
 spec:
   sourcePVC: syncthing
   trigger:
@@ -18,8 +17,8 @@ spec:
     volumeSnapshotClassName: csi-ceph-blockpool
     storageClassName: ceph-block
     customCA:
-      secretName: syncthing-restic-config
-      key: CUSTOM_CA_CRT
+      configMapName: personal-certificate-authority
+      key: ca-cert-personal.pem
     moverSecurityContext:
       runAsUser: 1000
       runAsGroup: 1000

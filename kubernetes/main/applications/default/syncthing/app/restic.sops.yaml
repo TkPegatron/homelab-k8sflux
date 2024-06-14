@@ -2,7 +2,6 @@ apiVersion: v1
 kind: Secret
 metadata:
     name: syncthing-restic-config
-    namespace: elliana
 type: Opaque
 stringData:
     #ENC[AES256_GCM,data:oHlpRv6ySdCZLc/VX59at9oPrg==,iv:WcAR/1VHB5U12VDnE6fKK1gbmtxcgTpUYCVTgpCZpuI=,tag:DsnD2e6IrbKTHttKMc2N5Q==,type:comment]
@@ -13,7 +12,6 @@ stringData:
     #ENC[AES256_GCM,data:XI+hRDDQrnImRQYNZBDZO7Cm2OBtgfEul30xiUMnyESOCSTyItr0fc/yKJMSph9zShYKGNlg6Y/EU8fbqd9mvA+K4KTXog==,iv:PCrJyHnr7ti9OmvtdIuOtfx4ikKAHplEjYFGycZJclQ=,tag:9ZD587UJJC2VaD9tKkJH7w==,type:comment]
     AWS_ACCESS_KEY_ID: ENC[AES256_GCM,data:VEwdRo6nvNuz5jpWOUK/77DXFms=,iv:1vyWztQ9PPajmyH2aDrMllov9FIinMTaRpwRpZBRsNA=,tag:P1SugG00gHxFPSW7Yd3YNQ==,type:str]
     AWS_SECRET_ACCESS_KEY: ENC[AES256_GCM,data:jDNBgVkZTr/gfSMd6eCh6RgQ4TEMMG5uYKB5rjXMl5NMeUEQ3GJ/4A==,iv:FL9E+R0PlgV0erS70UQxMtWsJGo6mOkuNPoqxwwhp9I=,tag:O0ZjKLtQFKWcI3YpGumHNw==,type:str]
-    CUSTOM_CA_CRT: ENC[AES256_GCM,data:5v8Ka3A6G9UgdRa/31KU5+PTt9U4AqiNjrqh8d7V6LtjQTSGiriC+WXupkzuWl8IcGCUq7TkdQwZGSlISWqug7Qgi+NDqippjAw3p292VPaidPx5f5fQ3vrH//5IJkIFj3fbYfRQ6ojXxUZfoD4v9WcAWEEd3pY2zZGbwblW9hZexfP1XDTI8n2sPdPqyTYEJLP9JJ2AouydwtKzKyG4WknkOH1jaQsoF2TnYCLNU7beqczBE/2aaPJGtE2Qa48vHlAXvJdlj86blyv2KEB+YWhMYS22bN0Y8MDOEzksmm9Z3CgDMISwgQw2Crd/GtRig7k2qDZUZK00wQyuNxARNKspYo3gv9SMzwiilcl3DG0i5K2wwJXGqMU93FIr8cfKIA+1tjXYM2LGlB2xubJ+6XhvFwVupRIJ5jLSSFhOgOYjXkMZ4B4W4BciqTUBiVnpi4WMiiNKZcGO8PCIT7yq4ACikEZSEf0RSColXReEYSn0izIQlP+KTa216i5/kse2So4sol4R706e1FTCi1Uxc/nug4pc280wnXWGXZ40NEZAkiUZXng+9m7SLPKdE0o+rVQaGCiXjYuOabuIZPvl0Ic5u7yabCCTQq+5gFhsD4EvlYg1J53hB6cXrqqtSnUb+nGgP2pSuK1rN9xFBCWFFA1qGloTMdnF860bJVkzNBRmjut3PieLIcTo+rTo79XiM55oyjBDsGO7lpWm+7fBf4tXuG3t3X8eZs3FGt63E2bGGnUb5nSx1GK8b2oIQgqAM7sifIcB+8R0JrBb0NXt9AJhIDwHpZ9BeBDORpNcWXof86U08J6JGucJhwXuYMTWFkOl0D986dmwLgCu7E60Iqbb/Q0tuiP3uMZiBx7rpwWB+eG2ktuteabYn0UeMkcRQmbdIikHTLPtrpA+kf4B+zPICVLWGITFtXXEvPMVBFiNBO36TOO9LTo=,iv:ai45ic4vYIfJkltND5Gqra3wG+Uyc9/ea2ObHzHDT+8=,tag:RwhsmV+7vCZOVoRrHLpBkg==,type:str]
 sops:
     kms: []
     gcp_kms: []
@@ -29,8 +27,8 @@ sops:
             NkxrT0lteFFHS0JWLzRqc2ladE9MZmMK54j2MsuSAxxC6cpFov4FegJnIRkikstk
             m5VWSEWL3mAuQSIyLdpI5bxhT3i4VWeTJmyocnA2Ffs82Wj5Ms61WQ==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2023-11-22T23:02:24Z"
-    mac: ENC[AES256_GCM,data:baQaRIqMGEje5hl+2l+zIHA42qd1s17D9/bCs6OHGcfqrOJ1NL9IVQGS6V0G8ZP+6FoB9D8EqwTOBI4SSSRZpJtQ+G/CV9cZPGhHZaRXO14ELnVQuqjITIFbV6Qw4ZV9vOySvLXkI7pxw1jMczZLrJ88Cikaz5WIj2sajze1ckg=,iv:Bi7qDhTmy0rYtqky8FSOhc9lsd2QIdVn9tkWtcDIoWQ=,tag:1vlMawIUumJ188/Uj+oKhg==,type:str]
+    lastmodified: "2024-06-13T22:41:52Z"
+    mac: ENC[AES256_GCM,data:vtK2hh+5mM5tcoD/MwGG5dV36iPbXnJasIvSizkTWIZZxrzC8TibUZPQbZe0cT73eOoMYbxD7MrqlYV5LFzw8n/7jW+z+VHY6LtgR/9yo3Aa8xsL9qd9YONPpMsosb3MTza2uJIue39fbKuKEsR1t8sGNFUXJdceM2dLPrnMoNo=,iv:n8nrzlUjOzE5vVpOFGhxiSPd8XC79yL5BxSyyqFAAM8=,tag:mOfe+qKntwkUVwWk1XfpBQ==,type:str]
     pgp:
         - created_at: "2023-08-31T12:57:39Z"
           enc: |
@@ -46,4 +44,4 @@ sops:
             -----END PGP MESSAGE-----
           fp: 97E082451A4C10B2A9C8681C09DEECDAFFE8153F
     encrypted_regex: ^(data|stringData)$
-    version: 3.7.3
+    version: 3.8.1
