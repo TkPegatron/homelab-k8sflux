@@ -12,7 +12,7 @@ resources:
   #- ./descheduler.yaml
   #- ./external-dns.yaml
   #- ./grafana.yaml
-  #- ./ingress-nginx.yaml
+  - ./ingress-nginx.yaml
   - ./jetstack.yaml
   - ./kyverno.yaml
   - ./metrics-server.yaml
