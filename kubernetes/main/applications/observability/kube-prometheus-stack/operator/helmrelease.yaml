@@ -33,7 +33,7 @@ spec:
       ingress:
         enabled: true
         pathType: Prefix
-        ingressClassName: nginx
+        ingressClassName: nginx-internal
         hosts:
           - &host alert-manager.zynthovian.xyz
         tls:
@@ -113,7 +113,7 @@ spec:
     prometheus:
       ingress:
         enabled: true
-        ingressClassName: nginx
+        ingressClassName: nginx-internal
         annotations:
           hajimari.io/appName: Prometheus
           hajimari.io/icon: simple-icons:prometheus

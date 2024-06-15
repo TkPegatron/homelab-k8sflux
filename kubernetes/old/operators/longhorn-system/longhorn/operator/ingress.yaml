@@ -12,7 +12,7 @@ metadata:
     #gethomepage.dev/name: "Longhorn"
     #gethomepage.dev/icon: longhorn
 spec:
-  ingressClassName: nginx
+  ingressClassName: nginx-internal
   rules:
     - host: &host longhorn.zynthovian.xyz
       http:

@@ -60,7 +60,7 @@ spec:
     ingress:
       main:
         enabled: true
-        ingressClassName: nginx
+        ingressClassName: nginx-internal
         annotations:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/group: "Apps"

@@ -33,9 +33,9 @@ spec:
       createPrometheusRules: true
     ingress:
       dashboard:
-        ingressClassName: nginx
+        ingressClassName: nginx-internal
         annotations:
-          external-dns.alpha.kubernetes.io/target: nginx.zynthovian.xyz
+          external-dns.alpha.kubernetes.io/target: nginx-internal.zynthovian.xyz
           gethomepage.dev/name: "Rook-Ceph"
           gethomepage.dev/group: "Storage"
           gethomepage.dev/icon: rook.png

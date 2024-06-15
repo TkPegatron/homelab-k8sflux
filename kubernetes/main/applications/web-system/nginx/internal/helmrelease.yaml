@@ -1,12 +1,12 @@
 ---
-# yaml-language-server: $schema=https://kubernetes-schemas.zynthovian.xyz/helm.toolkit.fluxcd.io/helmrelease_v2beta1.json
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: nginx-internal
   namespace: nginx-system
 spec:
-  interval: 15m
+  interval: 30m
   chart:
     spec:
       chart: ingress-nginx
@@ -15,41 +15,43 @@ spec:
         kind: HelmRepository
         name: ingress-nginx
         namespace: flux-system
-  maxHistory: 2
   install:
-    createNamespace: true
     remediation:
       retries: 3
   upgrade:
     cleanupOnFail: true
     remediation:
+      strategy: rollback
       retries: 3
-  uninstall:
-    keepHistory: false
   values:
     fullnameOverride: nginx-internal
     controller:
-      replicaCount: 3
-      extraEnvs:
-        - name: TZ
-          value: America/Detroit
+      replicaCount: 2
       service:
         annotations:
-          external-dns.alpha.kubernetes.io/hostname: nginx.zynthovian.xyz
+          external-dns.alpha.kubernetes.io/hostname: nginx-internal.zynthovian.xyz
           io.cilium/lb-ipam-ips: "${SVC_NGINX_ADDR}"
-        #externalIPs: ["${SVC_NGINX_ADDR}"]
-        externalTrafficPolicy: Local
-      publishService:
-        enabled: true
       ingressClassResource:
+        name: nginx-internal
         default: true
+        controllerValue: k8s.io/nginx-internal
+      admissionWebhooks:
+        objectSelector:
+          matchExpressions:
+            - key: ingress-class
+              operator: In
+              values: ["nginx-internal"]
+      allowSnippetAnnotations: true
       config:
         client-body-buffer-size: "100M"
         client-body-timeout: 120
         client-header-timeout: 120
         custom-http-errors: 400,401,403,404,500,502,503,504
         enable-brotli: "true"
+        enable-ocsp: "true"
         enable-real-ip: "true"
+        force-ssl-redirect: "true"
+        hide-headers: Server,X-Powered-By
         hsts-max-age: "31449600"
         keep-alive-requests: 10000
         keep-alive: 120
@@ -60,7 +62,8 @@ spec:
           "status": $status, "vhost": "$host", "request_proto": "$server_protocol", "path": "$uri", "request_query": "$args",
           "request_length": $request_length, "duration": $request_time, "method": "$request_method", "http_referrer": "$http_referer",
           "http_user_agent": "$http_user_agent"}
-        proxy-body-size: "100M"
+        proxy-body-size: 0
+        proxy-buffer-size: 16k
         ssl-protocols: "TLSv1.3 TLSv1.2"
         use-forwarded-headers: "true"
       metrics:
@@ -72,7 +75,8 @@ spec:
             any: true
       extraArgs:
         default-ssl-certificate: |-
-          nginx-system/zynthovian-xyz-tls
+          web-system/zynthovian-xyz-tls
+      terminationGracePeriodSeconds: 120
       topologySpreadConstraints:
         - maxSkew: 1
           topologyKey: kubernetes.io/hostname
@@ -80,36 +84,10 @@ spec:
           labelSelector:
             matchLabels:
               app.kubernetes.io/name: ingress-nginx
-              app.kubernetes.io/component: controller
               app.kubernetes.io/instance: nginx-internal
+              app.kubernetes.io/component: controller
       resources:
         requests:
           cpu: 10m
-          memory: 250Mi
         limits:
           memory: 500Mi
-    defaultBackend:
-      enabled: true
-      image:
-        repository: ghcr.io/tarampampam/error-pages
-        tag: 2.27.0
-      replicaCount: 3
-      extraEnvs:
-        - name: TEMPLATE_NAME
-          value: connection
-        - name: SHOW_DETAILS
-          value: "true"
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              podAffinityTerm:
-                labelSelector:
-                  matchExpressions:
-                    - key: app.kubernetes.io/name
-                      operator: In
-                      values: ["nginx-internal"]
-                    - key: app.kubernetes.io/component
-                      operator: In
-                      values: ["default-backend"]
-                topologyKey: kubernetes.io/hostname

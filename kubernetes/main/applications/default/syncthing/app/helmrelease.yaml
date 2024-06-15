@@ -99,13 +99,13 @@ spec:
     ingress:
       main:
         enabled: true
-        className: nginx
+        className: nginx-internal
         annotations:
           gethomepage.dev/name: "Syncthing"
           gethomepage.dev/group: "Apps"
           gethomepage.dev/icon: syncthing.png
           gethomepage.dev/enabled: "true"
-          external-dns.alpha.kubernetes.io/target: nginx.zynthovian.xyz
+          external-dns.alpha.kubernetes.io/target: nginx-internal.zynthovian.xyz
         hosts:
           - host: &host "{{ .Release.Name }}.zynthovian.xyz"
             paths:

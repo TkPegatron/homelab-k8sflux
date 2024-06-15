@@ -22,7 +22,7 @@ spec:
     - fromEndpoints:
         - matchLabels:
             k8s:app.kubernetes.io/instance: nginx-internal
-            io.kubernetes.pod.namespace: nginx-system
+            io.kubernetes.pod.namespace: web-system
   egress:
     - toEndpoints:
         - {}
@@ -42,7 +42,7 @@ spec:
     - toEndpoints:
         - matchLabels:
             k8s:app.kubernetes.io/instance: nginx-internal
-            io.kubernetes.pod.namespace: nginx-system
+            io.kubernetes.pod.namespace: web-system
       toPorts:
         - ports:
             - port: "443"
