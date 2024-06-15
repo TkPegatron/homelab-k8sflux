@@ -1,0 +1,21 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &ksn external-dns-internal
+  namespace: flux-system
+spec:
+  targetNamespace: web-system
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *ksn
+  path: ./kubernetes/main/applications/web-system/external-dns/internal
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: cluster-flux-public
+  wait: true
+  interval: 10m
+  retryInterval: 1m
+  timeout: 5m

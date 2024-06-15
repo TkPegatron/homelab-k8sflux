@@ -1,0 +1,65 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app external-dns-bind
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: external-dns
+      version: 1.14.5
+      sourceRef:
+        kind: HelmRepository
+        name: external-dns
+        namespace: flux-system
+  maxHistory: 2
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  values:
+    fullnameOverride: *app
+    provider: rfc2136
+    env:
+      - name: EXTERNAL_DNS_RFC2136_HOST
+        value: "172.22.0.1"
+      - name: EXTERNAL_DNS_RFC2136_PORT
+        value: "2053"
+      - name: EXTERNAL_DNS_RFC2136_ZONE
+        value: zynthovian.xyz
+      - name: EXTERNAL_DNS_RFC2136_TSIG_AXFR
+        value: "true"
+      - name: EXTERNAL_DNS_RFC2136_TSIG_KEYNAME
+        value: kubernetes
+      - name: EXTERNAL_DNS_RFC2136_TSIG_SECRET_ALG
+        valueFrom:
+          secretKeyRef:
+            name: external-dns-bind-secret
+            key: tsig-algorithm
+      - name: EXTERNAL_DNS_RFC2136_TSIG_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: external-dns-bind-secret
+            key: tsig-secret
+    policy: sync
+    sources: ["ingress", "service"]
+    txtOwnerId: main
+    txtPrefix: k8s.main.
+    domainFilters: ["zynthovian.xyz"]
+    serviceMonitor:
+      enabled: true
+    resources:
+      requests:
+        cpu: 16m
+        memory: 90M
+      limits:
+        memory: 90M
+    podAnnotations:
+      secret.reloader.stakater.com/reload: external-dns-bind-secret
