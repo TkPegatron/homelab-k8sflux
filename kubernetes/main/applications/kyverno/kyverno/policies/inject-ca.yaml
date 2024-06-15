@@ -86,7 +86,7 @@ spec:
                   name: personal-certificate-authority
             initContainers:
               - name: kyverno-inject-ca
-                image: ghcr.io/tkpegatron/alpine:3.19.0
+                image: ghcr.io/tkpegatron/alpine:3.19.1
                 command:
                   - /bin/sh
                   - -c
