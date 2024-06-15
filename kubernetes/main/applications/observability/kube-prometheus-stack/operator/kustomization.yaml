@@ -5,13 +5,8 @@ kind: Kustomization
 namespace: prometheus-system
 resources:
   - ./helmrelease.yaml
+  - ./secrets.yaml
 labels:
   - pairs:
       app.kubernetes.io/name: kube-prometheus-stack
       app.kubernetes.io/instance: kube-prometheus-stack
-secretGenerator:
-  - name: alertmanager-config
-    files:
-      - alertmanager.yaml=./config/alertmanager.yaml
-configurations:
-  - kustomizeconfig.yaml
