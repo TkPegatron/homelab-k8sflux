@@ -1,5 +1,5 @@
 # Used by
-# `kubernetes/operators/nginx-system`
+# `kubernetes/operators/web-system`
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.zynthovian.xyz/source.toolkit.fluxcd.io/helmrepository_v1beta2.json
 apiVersion: source.toolkit.fluxcd.io/v1

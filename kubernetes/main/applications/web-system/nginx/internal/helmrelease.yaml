@@ -4,7 +4,6 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: nginx-internal
-  namespace: nginx-system
 spec:
   interval: 30m
   chart:
@@ -70,7 +69,7 @@ spec:
         enabled: true
         serviceMonitor:
           enabled: true
-          namespace: nginx-system
+          namespace: web-system
           namespaceSelector:
             any: true
       extraArgs:
