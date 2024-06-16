@@ -81,6 +81,11 @@ spec:
             - *host
 
     persistence:
+      configroot:
+        enabled: true
+        type: emptyDir
+        globalMounts:
+          - path: /app/config
       images:
         enabled: true
         type: 'nfs'
