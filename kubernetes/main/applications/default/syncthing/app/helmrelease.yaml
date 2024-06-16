@@ -112,8 +112,8 @@ spec:
               - path: /
                 pathType: Prefix
                 service:
-                  name: main
-                  port: 8384
+                  identifier: main
+                  port: http
         tls:
           - hosts:
               - *host
