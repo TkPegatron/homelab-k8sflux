@@ -48,6 +48,12 @@ spec:
               - *host
     toolbox:
       enabled: true
+      resources:
+        limits:
+          memory: "300Mi"
+        requests:
+          cpu: "50m"
+          memory: "128Mi"
     configOverride: |
       [global]
       bdev_enable_discard = true
@@ -96,7 +102,7 @@ spec:
             cpu: 100m
             memory: 512Mi
           limits:
-            memory: 2Gi
+            memory: 500Mi
         mon:
           requests:
             cpu: 50m
@@ -108,13 +114,14 @@ spec:
             cpu: 500m
             memory: 2Gi
           limits:
-            memory: 6Gi
+            memory: "4Gi"
         mgr-sidecar:
           requests:
             cpu: 50m
-            memory: 128Mi
+            memory: 40Mi
           limits:
-            memory: 256Mi
+            memory: 100Mi
+
     cephBlockPools:
       - name: ceph-blockpool
         spec:
