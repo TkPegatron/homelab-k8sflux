@@ -18,8 +18,8 @@ spec:
     cacheStorageClassName: openebs-hostpath
     volumeSnapshotClassName: csi-ceph-blockpool
     customCA:
-      secretName: vaultwarden-restic-config
-      key: CUSTOM_CA_CRT
+      configMapName: personal-certificate-authority
+      key: ca-cert-personal.pem
     retain:
       daily: 7
       within: 3d

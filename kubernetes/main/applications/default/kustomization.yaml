@@ -8,7 +8,4 @@ resources:
   # Flux-Kustomizations
   - ./homepage/ks.yaml
   - ./syncthing/ks.yaml
-  #- ./netbox/ks.yaml
-  #- ./schemas/ks.yaml
-  #- ./vaultwarden/ks.yaml
-  #- ./wikijs/ks.yaml
+  - ./vaultwarden/ks.yaml
