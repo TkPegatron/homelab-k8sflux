@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://kubernetes-schemas.zynthovian.xyz/helmrelease_v2beta1.json
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -107,27 +107,33 @@ spec:
         enabled: true
   postRenderers:
     - kustomize:
-        patchesStrategicMerge:
-          - apiVersion: apps/v1
-            kind: Deployment
-            metadata:
+        patches:
+          - target:
+              group: apps
+              version: v1
+              kind: Deployment
               name: pod-gateway
-            spec:
-              template:
-                spec:
-                  volumes:
-                    - name: server-cache
-                      emptyDir: {}
-                  initContainers:
-                    - name: gluetun-updater
-                      image: >-
-                        ghcr.io/qdm12/gluetun:v3.38.0@sha256:5522794f5cce6d84bc7f06b1e3a3b836ede9100c64aec94543cb503bb2ecb72f
-                      args: [ "update", "-enduser", "-providers", "ivpn" ]
-                      volumeMounts:
-                        - mountPath: /gluetun
-                          name: server-cache
-                  containers:
-                    - name: gluetun
-                      volumeMounts:
-                        - mountPath: /gluetun
-                          name: server-cache
+            patch: |-
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: pod-gateway
+              spec:
+                template:
+                  spec:
+                    volumes:
+                      - name: server-cache
+                        emptyDir: {}
+                    initContainers:
+                      - name: gluetun-updater
+                        image: >-
+                          ghcr.io/qdm12/gluetun:v3.38.0@sha256:5522794f5cce6d84bc7f06b1e3a3b836ede9100c64aec94543cb503bb2ecb72f
+                        args: [ "update", "-enduser", "-providers", "ivpn" ]
+                        volumeMounts:
+                          - mountPath: /gluetun
+                            name: server-cache
+                    containers:
+                      - name: gluetun
+                        volumeMounts:
+                          - mountPath: /gluetun
+                            name: server-cache
