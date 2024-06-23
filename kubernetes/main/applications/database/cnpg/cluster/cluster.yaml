@@ -4,7 +4,6 @@ apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
   name: postgres
-  namespace: cnpg
   annotations:
     kyverno.io/ignore: "true"
 spec:
@@ -31,7 +30,7 @@ spec:
       wal:
         compression: bzip2
         maxParallel: 8
-      serverName: &currentCluster ea72e01b-9f39-47c2-b24d-f2f960122776
+      serverName: &currentCluster kubernetes-main-65a3c8b11f61
       destinationPath: s3://postgres-cluster/
       endpointURL: https://xenia.zynthovian.xyz:9090
       endpointCA:

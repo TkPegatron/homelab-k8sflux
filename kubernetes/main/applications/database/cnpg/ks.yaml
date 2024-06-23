@@ -1,12 +1,16 @@
-# yaml-language-server: $schema=https://kubernetes-schemas.zynthovian.xyz/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: cluster-operators-cnpg-operator
+  name: &app cnpg-operator
   namespace: flux-system
 spec:
-  path: ./kubernetes/operators/cnpg/cnpg/operator
+  targetNamespace: &ns database
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  path: ./kubernetes/main/applications/database/cnpg/operator
   prune: true
   sourceRef:
     kind: GitRepository
@@ -15,22 +19,26 @@ spec:
     - apiVersion: helm.toolkit.fluxcd.io/v2beta1
       kind: HelmRelease
       name: cloudnative-pg
-      namespace: cnpg
+      namespace: *ns
   interval: 30m
   retryInterval: 1m
   timeout: 3m
 ---
-# yaml-language-server: $schema=https://kubernetes-schemas.zynthovian.xyz/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: cluster-operators-cnpg-cluster
+  name: &app cnpg-cluster
   namespace: flux-system
 spec:
+  targetNamespace: &ns database
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
   dependsOn:
+    - name: cnpg-operator
     - name: openebs
-    - name: cluster-operators-cnpg-operator
-  path: ./kubernetes/operators/cnpg/cnpg/cluster
+  path: ./kubernetes/main/applications/database/cnpg/cluster
   prune: true
   sourceRef:
     kind: GitRepository
@@ -39,7 +47,7 @@ spec:
     - apiVersion: postgresql.cnpg.io/v1
       kind: Cluster
       name: postgres
-      namespace: cnpg
+      namespace: *ns
   wait: true
   interval: 30m
   retryInterval: 1m
