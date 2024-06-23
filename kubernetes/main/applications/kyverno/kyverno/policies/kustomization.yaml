@@ -6,5 +6,5 @@ resources:
   #- ./delete-cpu-limits.yaml
   - ./inject-ca.yaml
   #- ./mutate-ingress-annotations.yaml
-  #- ./rook-resource-limits.yaml
-  #- ./rook-resource-requests.yaml
+  - ./rook-resource-limits.yaml
+  - ./rook-resource-requests.yaml
