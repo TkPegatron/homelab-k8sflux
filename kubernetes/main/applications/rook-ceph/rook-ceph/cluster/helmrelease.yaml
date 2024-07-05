@@ -27,6 +27,8 @@ spec:
       namespace: rook-ceph
     - name: snapshot-controller
       namespace: volsync-system
+    - name: kyverno
+      namespace: kyverno
   values:
     monitoring:
       enabled: true
