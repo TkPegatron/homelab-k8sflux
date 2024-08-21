@@ -77,8 +77,10 @@ spec:
             value: openvpn
           - name: VPN_ENDPOINT_PORT
             value: 2050
-          - name: FIREWALL
-            value: "off"
+          - name: FIREWALL_DEBUG
+            value: "on"
+          - name: FIREWALL_OUTBOUND_SUBNETS
+            value: *local_cidrs
           - name: SHADOWSOCKS
             value: "on"
           - name: DOT
