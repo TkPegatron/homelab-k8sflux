@@ -77,6 +77,8 @@ spec:
             value: openvpn
           - name: OPENVPN_ENDPOINT_PORT
             value: 2050
+          - name: FIREWALL
+            value: "off"
           - name: FIREWALL_DEBUG
             value: "on"
           - name: FIREWALL_OUTBOUND_SUBNETS
