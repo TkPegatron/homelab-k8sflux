@@ -77,6 +77,7 @@ spec:
             value: openvpn
           - name: OPENVPN_ENDPOINT_PORT
             value: 2050
+          # Do not interject firewall rules, pod-gateway applies it's own
           - name: FIREWALL_ENABLED_DISABLING_IT_SHOOTS_YOU_IN_YOUR_FOOT
             value: "off"
           - name: FIREWALL_DEBUG
