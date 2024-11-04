@@ -7,7 +7,7 @@ collections:
   - name: kubernetes.core
     version: 5.0.0
   - name: community.sops
-    version: 1.9.0
+    version: 1.9.1
   - name: fedora.linux_system_roles
     version: 1.85.0
 roles:
