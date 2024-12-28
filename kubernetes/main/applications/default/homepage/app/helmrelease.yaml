@@ -35,7 +35,7 @@ spec:
           main:
             image:
               repository: ghcr.io/gethomepage/homepage
-              tag: latest@sha256:e11966baac52469ca510dee04281713e8d66bd58f9e3ac9d224f0caf536851b4
+              tag: latest@sha256:426d75031d40a47d58b962766a4d11277490973c137ff5a98e051c9d204f5268
               pullPolicy: IfNotPresent
             env:
               TZ: America/Detroit
