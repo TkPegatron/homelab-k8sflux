@@ -54,7 +54,7 @@ spec:
           redis-main:
             image: &redis-image
               repository: docker.io/library/redis
-              tag: 7.4.1-alpine
+              tag: 7.4.2-alpine
               pullPolicy: IfNotPresent
             command:
               - sh
