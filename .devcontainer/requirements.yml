@@ -1,11 +1,11 @@
 ---
 collections:
   - name: ansible.posix
-    version: 1.5.4
+    version: 1.6.2
   - name: community.general
-    version: 9.3.0
+    version: 10.0.0
   - name: kubernetes.core
-    version: 5.0.0
+    version: 5.1.0
   - name: community.sops
     version: 2.0.0
   - name: fedora.linux_system_roles
