@@ -35,7 +35,7 @@ spec:
           init-db: # Set up postgres on cnpg multi-db cluster
             image:
               repository: ghcr.io/onedr0p/postgres-init
-              tag: rolling@sha256:53fa938cfe6d2dae23b120145362341950f1154bf9d0e7f2ec4e471d61624f79
+              tag: rolling@sha256:a37bbb04a0ea3f15b505c6f97637e7ae89bc66541ae23b8d3848024087980e76
               pullPolicy: IfNotPresent
             envFrom:
               - secretRef:
@@ -45,7 +45,7 @@ spec:
           main:
             image:
               repository: ghcr.io/netbox-community/netbox
-              tag: latest@sha256:db44dc545ab8e01e24bf332fde6c964bdb31c7fa4ee8a223759135decc88be56
+              tag: latest@sha256:953cb21c3c62462ba6b174dbcd874f7ea96e88852b778b566bdaffaf3be85171
               pullPolicy: IfNotPresent
             envFrom:
               - configMapRef:
@@ -54,7 +54,7 @@ spec:
           redis-main:
             image: &redis-image
               repository: docker.io/library/redis
-              tag: 7.4.1-alpine
+              tag: 7.4.2-alpine
               pullPolicy: IfNotPresent
             command:
               - sh
