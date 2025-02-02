@@ -35,7 +35,7 @@ spec:
           init-db: # Set up postgres on cnpg multi-db cluster
             image:
               repository: ghcr.io/onedr0p/postgres-init
-              tag: rolling@sha256:35353a77777ee8f634d0f3945f495b4a40065134b8619e0d18bd49b0ee9c855b
+              tag: rolling@sha256:a37bbb04a0ea3f15b505c6f97637e7ae89bc66541ae23b8d3848024087980e76
               pullPolicy: IfNotPresent
             envFrom:
               - secretRef:
