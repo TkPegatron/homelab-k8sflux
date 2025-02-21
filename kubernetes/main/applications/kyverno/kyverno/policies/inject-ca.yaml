@@ -35,7 +35,6 @@ metadata:
       Reflect personal cert authority public key to all namespaces.
     policies.kyverno.io/category: reflectors
 spec:
-  generateExistingOnPolicyUpdate: true
   background: true
   rules:
     - name: reflect-cert-authority
@@ -45,6 +44,7 @@ spec:
               kinds: ['Namespace']
               #names: ['elliana']
       generate:
+        generateExisting: true
         apiVersion: v1
         clone:
           name: personal-certificate-authority

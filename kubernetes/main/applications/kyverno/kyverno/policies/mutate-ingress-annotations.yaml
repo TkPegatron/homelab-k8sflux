@@ -53,8 +53,6 @@ metadata:
       is set to true, it applies external-dns annotations
       pointing the resultant name records to the public ip address.
 spec:
-  mutateExistingOnPolicyUpdate: true
-  generateExistingOnPolicyUpdate: true
   rules:
     - name: external-dns
       match:
@@ -64,6 +62,7 @@ spec:
               annotations:
                 external-dns.home.arpa/public: "true"
       mutate:
+        mutateExistingOnPolicyUpdate: true
         targets:
           - apiVersion: networking.k8s.io/v1
             kind: Ingress
@@ -87,8 +86,6 @@ metadata:
       set to true, it applies nginx "whitelist" annotations which
       restrict access to hosts within rfc1918 addresses..
 spec:
-  mutateExistingOnPolicyUpdate: true
-  generateExistingOnPolicyUpdate: true
   rules:
     - name: whitelist
       match:
@@ -101,6 +98,7 @@ spec:
               annotations:
                 external-dns.home.arpa/public: "true"
       mutate:
+        mutateExistingOnPolicyUpdate: true
         targets:
           - apiVersion: networking.k8s.io/v1
             kind: Ingress
