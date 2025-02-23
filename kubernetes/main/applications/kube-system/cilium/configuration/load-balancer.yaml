@@ -3,5 +3,5 @@ kind: CiliumLoadBalancerIPPool
 metadata:
   name: "lb-pool-general"
 spec:
-  cidrs:
+  blocks:
     - cidr: "172.21.0.0/16"
