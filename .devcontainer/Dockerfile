@@ -24,8 +24,17 @@ run set -x; cd "$(mktemp -d)" && \
 
 USER $USERNAME
 
-
 ENV PATH="$PATH:/home/$USERNAME/.local/bin"
+
+ENV PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+
+run set -x; \
+    kubectl krew index add krew https://github.com/kubernetes-sigs/krew-index && \
+    kubectl krew index add netshoot https://github.com/nilic/kubectl-netshoot.git && \
+    kubectl krew update && \
+    kubectl krew install krew/cnpg && \
+    kubectl krew install krew/commander && \
+    kubectl krew install netshoot/netshoot
 
 # Install Python Dependencies
 COPY ./requirements.txt /opt/requirements.txt

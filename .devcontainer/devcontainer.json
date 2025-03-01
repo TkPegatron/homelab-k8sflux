@@ -1,5 +1,5 @@
 {
-	"name": "Homelab Builder",
+	"name": "HLB-Kubernetes",
 	"build": {
 		"dockerfile": "./Dockerfile",
 		"args": {
