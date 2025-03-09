@@ -29,7 +29,7 @@ data:
   services.yaml: ""
   settings.yaml: |
     background:
-      image: '/images/1673943777262932.jpg'
+      image: '/images/1663690445641739.jpg'
       blur: sm
       opacity: 100
     theme: light
