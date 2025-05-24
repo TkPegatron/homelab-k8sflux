@@ -9,7 +9,7 @@ collections:
   - name: community.sops
     version: 2.0.2
   - name: fedora.linux_system_roles
-    version: 1.95.1
+    version: 1.101.0
 roles:
   - name: xanmanning.k3s
     src: https://github.com/PyratLabs/ansible-role-k3s.git
