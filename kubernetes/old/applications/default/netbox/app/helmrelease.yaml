@@ -45,7 +45,7 @@ spec:
           main:
             image:
               repository: ghcr.io/netbox-community/netbox
-              tag: latest@sha256:cd5326a21d01f10bd59c5b0a0461f9cd19edfe36c4fcdc47360eafefaafe78c3
+              tag: latest@sha256:2232125010d981013f10c666cae0d044fc73a2ba2a5d3818c6e68db9006e65b7
               pullPolicy: IfNotPresent
             envFrom:
               - configMapRef:
