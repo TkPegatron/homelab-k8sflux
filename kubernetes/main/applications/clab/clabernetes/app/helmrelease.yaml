@@ -28,3 +28,5 @@ spec:
     remediation:
       retries: 3
   values:
+    globalConfig:
+      naming: non-prefixed
