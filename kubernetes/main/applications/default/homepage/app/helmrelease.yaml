@@ -104,9 +104,8 @@ spec:
     # Service Account and Roles
     # ============================
     serviceAccount:
-      default:
+      homepage:
         enabled: true
-        forceRename: *app
     rbac:
       roles:
         default:
