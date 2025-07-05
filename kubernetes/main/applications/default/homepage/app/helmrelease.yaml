@@ -106,6 +106,7 @@ spec:
     serviceAccount:
       default:
         enabled: true
+        forceRename: *app
     rbac:
       roles:
         default:
