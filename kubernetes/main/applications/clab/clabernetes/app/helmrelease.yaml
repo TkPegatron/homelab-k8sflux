@@ -20,7 +20,6 @@ spec:
   chartRef:
     kind: OCIRepository
     name: clabernetes
-    namespace: flux-system
   install:
     remediation:
       retries: 3
