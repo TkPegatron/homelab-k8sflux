@@ -18,6 +18,13 @@ spec:
     remediation:
       retries: 3
   values:
+    defaultPodOptions:
+      securityContext:
+        runAsUser: 568
+        runAsGroup: 568
+        fsGroup: 568
+        fsGroupChangePolicy: OnRootMismatch
+        supplementalGroups: [10000]
     controllers:
       main:
         type: deployment
@@ -36,37 +43,6 @@ spec:
               TZ: America/Detroit
               PUID: 568
               PGID: 568
-    defaultPodOptions:
-      securityContext:
-        runAsUser: 568
-        runAsGroup: 568
-        fsGroup: 568
-        fsGroupChangePolicy: OnRootMismatch
-        supplementalGroups: [10000]
-    service:
-      main:
-        enabled: true
-        controller: main
-        ports:
-          http:
-            port: 3000
-    ingress:
-      main:
-        enabled: true
-        className: nginx-internal
-        annotations:
-          external-dns.alpha.kubernetes.io/target: nginx-internal.zynthovian.xyz
-        hosts:
-          - host: &host "{{ .Release.Name }}.zynthovian.xyz"
-            paths:
-              - path: /
-                pathType: Prefix
-                service:
-                  identifier: main
-                  port: http
-        tls:
-          - hosts:
-            - *host
     persistence:
       configroot:
         enabled: true
@@ -100,6 +76,33 @@ spec:
                 subPath: settings.yaml
               - path: /app/config/widgets.yaml
                 subPath: widgets.yaml
+    # ============================
+    # Service and Ingress
+    # ============================
+    service:
+      main:
+        enabled: true
+        controller: main
+        ports:
+          http:
+            port: 3000
+    ingress:
+      main:
+        enabled: true
+        className: nginx-internal
+        annotations:
+          external-dns.alpha.kubernetes.io/target: nginx-internal.zynthovian.xyz
+        hosts:
+          - host: &host "{{ .Release.Name }}.zynthovian.xyz"
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  identifier: main
+                  port: http
+        tls:
+          - hosts:
+            - *host
     # ============================
     # Service Account and Roles
     # ============================
