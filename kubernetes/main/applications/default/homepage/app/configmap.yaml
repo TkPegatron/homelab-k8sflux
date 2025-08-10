@@ -29,18 +29,18 @@ data:
   services.yaml: ""
   settings.yaml: |
     background:
-      image: '/images/1663690445641739.jpg'
+      image: '/images/8c1be2c4d27cbd4d33bb8045455fae57.png'
       blur: sm
       opacity: 100
     theme: light
   widgets.yaml: |
-    #- kubernetes:
-    #    cluster:
-    #      show: true
-    #      cpu: true
-    #      memory: true
-    #      showLabel: true
-    #      label: "cluster"
+    - kubernetes:
+        cluster:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
+          label: "cluster"
     - search:
         provider: duckduckgo
         target: _blank
