@@ -36,7 +36,7 @@ spec:
           main:
             image:
               repository: ghcr.io/gethomepage/homepage
-              tag: latest@sha256:cd8da3c81ede2a072510930defdcf44c7a0473f72a6d5216beea3b13b3093afe
+              tag: latest@sha256:b129cb0f674bd6d204e215bde2c2fc3f11d6ad0e82f6d20007cf80f74e1acbb1
               pullPolicy: IfNotPresent
             env:
               HOMEPAGE_ALLOWED_HOSTS: homepage.zynthovian.xyz
