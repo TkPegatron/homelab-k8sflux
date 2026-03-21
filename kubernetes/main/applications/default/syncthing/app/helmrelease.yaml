@@ -40,7 +40,7 @@ spec:
           main:
             image:
               repository: docker.io/syncthing/syncthing
-              tag: 1.29.7@sha256:dde2305f0b78260a66e4a12785f0e26d86e89276ffccf50209c34943f270a954
+              tag: 2.0.15@sha256:37c0e031d9f5559dfa416f0f9157509277d97a24abd0ad27590bd92a91616ecc
             env:
               PUID: 1000
               PGID: 1000
