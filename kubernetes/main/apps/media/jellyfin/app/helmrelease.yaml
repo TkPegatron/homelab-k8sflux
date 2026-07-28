@@ -45,6 +45,8 @@ spec:
             port: 8096
     route:
       app:
+        annotations:
+          external-dns.alpha.kubernetes.io/target: internal.zynthovian.xyz
         hostnames:
           - "{{ .Release.Name }}.zynthovian.xyz"
         parentRefs:
