@@ -5,6 +5,8 @@ kind: ReplicationDestination
 metadata:
   name: "${APP}-dst"
   labels:
+    app.kubernetes.io/instance: ${APP}
+    app.kubernetes.io/name: ${APP}
     kustomize.toolkit.fluxcd.io/ssa: IfNotPresent
 spec:
   trigger:

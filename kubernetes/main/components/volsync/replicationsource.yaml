@@ -4,6 +4,9 @@ apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
   name: ${APP}
+  labels:
+    app.kubernetes.io/instance: ${APP}
+    app.kubernetes.io/name: ${APP}
 spec:
   sourcePVC: ${APP}
   trigger:
