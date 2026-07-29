@@ -66,6 +66,15 @@ spec:
           - path: /media/Movies
             readOnly: true
             subPath: Movies
+          - path: /media/Music
+            readOnly: true
+            subPath: Music
+          - path: /media/Books
+            readOnly: true
+            subPath: Books
+          - path: /media/videos
+            readOnly: true
+            subPath: videos
       dri:
         hostPath: /dev/dri
         type: hostPath
