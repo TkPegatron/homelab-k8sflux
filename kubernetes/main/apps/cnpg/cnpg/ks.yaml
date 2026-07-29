@@ -6,11 +6,11 @@ metadata:
   name: cnpg
 spec:
   interval: 1h
-  path: ./kubernetes/main/apps/cnpg-system/cnpg/app
+  path: ./kubernetes/main/apps/cnpg/cnpg/app
   prune: true
   sourceRef:
     kind: GitRepository
     name: cluster-flux-public
     namespace: flux-system
-  targetNamespace: cnpg-system
+  targetNamespace: cnpg
   wait: false
