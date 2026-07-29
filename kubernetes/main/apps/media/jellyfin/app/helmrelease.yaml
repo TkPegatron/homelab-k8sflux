@@ -72,9 +72,9 @@ spec:
           - path: /media/Books
             readOnly: true
             subPath: Books
-          - path: /media/videos
+          - path: /media/Videos
             readOnly: true
-            subPath: videos
+            subPath: Videos
       dri:
         hostPath: /dev/dri
         type: hostPath
