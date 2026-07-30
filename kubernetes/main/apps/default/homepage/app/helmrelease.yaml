@@ -73,11 +73,11 @@ spec:
           - name: envoy-internal
             namespace: network
     persistence:
-      config_underlay:
+      config-underlay:
         type: emptyDir
         globalMounts:
           - path: /app/config/
-      config_overlay:
+      config-overlay:
         type: configMap
         name: homepage
         globalMounts:
