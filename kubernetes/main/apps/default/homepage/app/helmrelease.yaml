@@ -73,7 +73,11 @@ spec:
           - name: envoy-internal
             namespace: network
     persistence:
-      config:
+      config_underlay:
+        type: emptyDir
+        globalMounts:
+          - path: /app/config/
+      config_overlay:
         type: configMap
         name: homepage
         globalMounts:
@@ -93,10 +97,6 @@ spec:
             subPath: settings.yaml
           - path: /app/config/widgets.yaml
             subPath: widgets.yaml
-      logs:
-        type: emptyDir
-        globalMounts:
-          - path: /app/config/logs
       tmp:
         type: emptyDir
     rbac:
