@@ -1,0 +1,7 @@
+title: LocalNet Homepage
+theme: dark
+color: slate
+headerStyle: boxedWidgets
+showStats: true
+statusStyle: "dot"
+disableIndexing: true
