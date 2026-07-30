@@ -89,6 +89,10 @@ spec:
             subPath: settings.yaml
           - path: /app/config/widgets.yaml
             subPath: widgets.yaml
+      logs:
+        type: emptyDir
+        globalMounts:
+          - path: /app/config/logs
       tmp:
         type: emptyDir
     rbac:
