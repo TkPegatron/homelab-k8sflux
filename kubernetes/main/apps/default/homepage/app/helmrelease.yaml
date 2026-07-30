@@ -68,7 +68,7 @@ spec:
     route:
       app:
         hostnames:
-          - "{{ .Release.Name }}.zynthiovian.xyz"
+          - "{{ .Release.Name }}.zynthovian.xyz"
         parentRefs:
           - name: envoy-internal
             namespace: network
