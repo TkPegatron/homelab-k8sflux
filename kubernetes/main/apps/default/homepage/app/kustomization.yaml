@@ -8,6 +8,7 @@ resources:
 configMapGenerator:
   - name: homepage
     files:
+      - bookmarks.yaml=./config/bookmarks.yml
       - custom.css=./config/custom.css
       - custom.js=./config/custom.js
       - docker.yaml=./config/docker.yml

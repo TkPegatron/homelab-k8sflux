@@ -77,6 +77,8 @@ spec:
         type: configMap
         name: homepage
         globalMounts:
+          - path: /app/config/bookmarks.yaml
+            subPath: bookmarks.yaml
           - path: /app/config/custom.css
             subPath: custom.css
           - path: /app/config/custom.js
