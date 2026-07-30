@@ -12,6 +12,7 @@ configMapGenerator:
       - custom.js=./config/custom.js
       - docker.yaml=./config/docker.yml
       - kubernetes.yaml=./config/kubernetes.yml
+      - services.yaml=./config/services.yml
       - settings.yaml=./config/settings.yml
       - widgets.yaml=./config/widgets.yml
 generatorOptions:
