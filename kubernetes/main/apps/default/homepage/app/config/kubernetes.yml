@@ -1,1 +1,4 @@
 mode: cluster
+ingress: false
+traefik: false
+gateway: true
