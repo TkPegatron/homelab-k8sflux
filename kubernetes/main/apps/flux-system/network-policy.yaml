@@ -1,0 +1,37 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: flux-allow
+spec:
+  endpointSelector: {}
+  egress:
+    - toFQDNs:
+        - matchName: "github.com" # GitRepository source, main-public.yaml
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+    - toFQDNs:
+        - matchPattern: "*.ghcr.io" # OCIRepository sources — verify exact registries in use
+        - matchPattern: "*.gcr.io" # mirror.gcr.io seen for some charts
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+  ingress:
+    - fromEntities:
+        - kube-apiserver
+      # Flux CRD conversion webhooks
+    - fromEndpoints:
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": "network"
+      toPorts:
+        - ports:
+            - port: "9292" # flux-operator web UI — verify
+              protocol: TCP
+    - fromEndpoints:
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": "o11y"
+      # serviceMonitor.create: true confirmed in the flux-operator HelmRelease

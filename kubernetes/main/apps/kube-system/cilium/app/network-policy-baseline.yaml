@@ -1,0 +1,35 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/cilium.io/ciliumclusterwidenetworkpolicy_v2.json
+# Cluster-wide default-deny baseline. Applies to every pod in every
+# namespace. Deliberately minimal: only the two things literally every pod
+# needs (DNS, apiserver access) plus the kubelet-probe allowance that
+# default-deny clusters otherwise spend an hour debugging. Namespace-specific
+# additional allowances live in each namespace's own network-policy.yaml.
+#
+# Enforcement is currently audit-only cluster-wide via
+# `policyAuditMode: true` in ../helmrelease.yaml — watch Hubble for
+# would-be drops before turning that off.
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: default-deny-baseline
+spec:
+  endpointSelector: {}
+  ingress:
+    - fromEntities:
+        - host
+      # kubelet liveness/readiness/startup probes originate from the local
+      # node's "host" identity.
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": "kube-system"
+            "k8s-app": "kube-dns"
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+    - toEntities:
+        - kube-apiserver

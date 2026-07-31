@@ -1,0 +1,53 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/cilium.io/ciliumnetworkpolicy_v2.json
+# Additional allowances on top of ../kube-system/cilium/app/network-policy-baseline.yaml.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: coredns-ingress
+spec:
+  endpointSelector:
+    matchLabels:
+      "k8s-app": "kube-dns"
+  ingress:
+    - fromEntities:
+        - cluster
+      # every namespace's egress-to-kube-dns rule (cluster baseline) is only
+      # half of the story — coredns itself needs the matching ingress allow.
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: metrics-server-kubelet-egress
+spec:
+  endpointSelector:
+    matchLabels:
+      "app.kubernetes.io/name": "metrics-server" # verify against the deployed pod's actual labels
+  egress:
+    - toEntities:
+        - host
+        - remote-node
+      toPorts:
+        - ports:
+            - port: "10250"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: o11y-scrape-ingress
+spec:
+  endpointSelector: {}
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": "o11y"
+      # kube-prometheus-stack's bundled ServiceMonitors reach into
+      # kube-system for etcd/scheduler/controller-manager/coredns metrics.
+      # Not port-pinned — see the note on o11y's own egress policy for why.

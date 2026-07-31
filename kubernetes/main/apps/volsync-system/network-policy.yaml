@@ -1,0 +1,20 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: volsync-controller-allow
+spec:
+  endpointSelector: {}
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": "o11y"
+      # a PrometheusRule for VolSync exists; verify the exact metrics port
+      # before tightening this beyond namespace-level.
+  # The actual Kopia mover Jobs run in the *owning* namespace (media, for
+  # jellyfin's PVC), not here — if that repo turns out to be NFS-mounted at
+  # the kubelet level (matching the jellyfin media mount pattern), that
+  # traffic bypasses this policy entirely; if the mover instead speaks
+  # Kopia's protocol over the pod network, add an egress rule to
+  # xenia.zynthovian.xyz in media's network-policy.yaml.

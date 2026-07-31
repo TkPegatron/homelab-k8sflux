@@ -69,6 +69,12 @@ spec:
       rollOutPods: true
     pmtuDiscovery:
       enabled: true
+    # Cluster-wide audit-only enforcement while the new CiliumNetworkPolicy /
+    # CiliumClusterwideNetworkPolicy set rolls out: policies are evaluated
+    # and logged (visible in Hubble as would-be drops) but nothing is
+    # actually dropped. Flip to `false` once verified, or these policies
+    # provide no real protection.
+    policyAuditMode: true
     prometheus:
       enabled: true
       serviceMonitor:

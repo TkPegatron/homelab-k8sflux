@@ -1,0 +1,25 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: media-allow
+spec:
+  endpointSelector: {}
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": "network"
+      # non-LAN/cluster egress from this namespace is tunneled to
+      # vpn-gateway (see vpn-gateway-allow in ../network/network-policy.yaml)
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": "network"
+      toPorts:
+        - ports:
+            - port: "8096" # jellyfin
+              protocol: TCP
+  # jellyfin's NFS media mount (persistence.media.type: nfs) is a
+  # kubelet-level mount, not pod-netns traffic — this policy can't govern
+  # it either way. Same for VolSync's Kopia repo if it lands here.

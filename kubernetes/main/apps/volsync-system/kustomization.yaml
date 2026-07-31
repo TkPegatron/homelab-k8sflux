@@ -6,4 +6,5 @@ namespace: volsync-system
 
 resources:
   - ./namespace.yaml
+  - ./network-policy.yaml
   - ./volsync/ks.yaml

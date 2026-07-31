@@ -5,4 +5,5 @@ kind: Kustomization
 namespace: cert-manager
 resources:
   - ./namespace.yaml
+  - ./network-policy.yaml
   - ./cert-manager/ks.yaml

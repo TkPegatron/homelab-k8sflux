@@ -6,6 +6,7 @@ namespace: kube-system
 
 resources:
   - ./namespace.yaml
+  - ./network-policy.yaml
   # Flux Kustomizations
   - ./cilium/ks.yaml
   - ./hubble/ks.yaml

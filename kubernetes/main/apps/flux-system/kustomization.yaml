@@ -9,5 +9,6 @@ namespace: flux-system
 
 resources:
   - ./namespace.yaml
+  - ./network-policy.yaml
   - ./instance/ks.yaml
   - ./operator/ks.yaml

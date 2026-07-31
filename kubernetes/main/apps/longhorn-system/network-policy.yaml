@@ -1,0 +1,29 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: longhorn-allow
+spec:
+  endpointSelector: {}
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": "longhorn-system"
+      # engine/replica sync between nodes uses dynamically-allocated ports —
+      # broad same-namespace allow is the pragmatic call here, not a gap.
+    - fromEndpoints:
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": "network"
+      toPorts:
+        - ports:
+            - port: "80" # longhorn-frontend Service port — verify
+              protocol: TCP
+    - fromEndpoints:
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": "o11y"
+      # metrics.serviceMonitor.enabled: true in the longhorn HelmRelease
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": "longhorn-system"

@@ -1,0 +1,36 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: cert-manager-allow
+spec:
+  endpointSelector: {}
+  egress:
+    - toFQDNs:
+        - matchName: "acme-v02.api.letsencrypt.org" # confirmed in the ClusterIssuer
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+    - toFQDNs:
+        - matchName: "api.cloudflare.com" # Cloudflare DNS-01 solver, confirmed
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+  ingress:
+    - fromEntities:
+        - kube-apiserver
+      # cert-manager's conversion/validating webhook
+      toPorts:
+        - ports:
+            - port: "10250" # verify chart's actual webhook port
+              protocol: TCP
+    - fromEndpoints:
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": "o11y"
+      toPorts:
+        - ports:
+            - port: "9402" # verify metrics port
+              protocol: TCP
