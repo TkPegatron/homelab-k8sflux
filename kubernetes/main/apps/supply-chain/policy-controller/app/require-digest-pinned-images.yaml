@@ -1,0 +1,50 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.36.0/validatingadmissionpolicy-admissionregistration-v1.json
+# Native ValidatingAdmissionPolicy (CEL) — doesn't need policy-controller
+# or any other new dependency, unlike signature verification. Most images
+# in this cluster are already digest-pinned (Renovate tracks digests for
+# ghcr.io/tkpegatron, ghcr.io/onedr0p, ghcr.io/bjw-s already); this
+# catches drift/regressions rather than flagging a pile of existing
+# violations.
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: require-digest-pinned-images
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE"]
+        resources: ["pods"]
+  matchConditions:
+    - name: not-exempt
+      expression: >-
+        !(has(object.metadata.labels) &&
+          'policy.zynthovian.xyz/exempt-digest-pin' in object.metadata.labels &&
+          object.metadata.labels['policy.zynthovian.xyz/exempt-digest-pin'] == 'true')
+  validations:
+    - expression: >-
+        object.spec.containers.all(c, c.image.contains('@sha256:')) &&
+        (!has(object.spec.initContainers) ||
+          object.spec.initContainers.all(c, c.image.contains('@sha256:')))
+      messageExpression: >-
+        '"' + object.metadata.name + '" in namespace "' + object.metadata.namespace +
+        '" references an image by mutable tag instead of a digest. Pin it with ' +
+        '@sha256:<digest>, or label the pod policy.zynthovian.xyz/exempt-digest-pin: ' +
+        '"true" if this is genuinely unavoidable (e.g. a chart that always resolves ' +
+        '"latest" itself).'
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: require-digest-pinned-images
+spec:
+  policyName: require-digest-pinned-images
+  # Audit + Warn first, same as the other policies in this round — flip
+  # to [Deny] once you've confirmed nothing currently deploys an
+  # undigested image.
+  validationActions:
+    - Audit
+    - Warn

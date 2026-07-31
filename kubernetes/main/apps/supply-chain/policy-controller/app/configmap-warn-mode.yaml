@@ -1,0 +1,16 @@
+---
+# Global default: an image that doesn't match any ClusterImagePolicy, or
+# fails one, is WARNED about, not blocked. Same audit-before-enforce
+# posture as everything else added in this round.
+#
+# Name/namespace/key are taken from policy-controller's documented
+# `config-policy-controller` ConfigMap convention — verify against your
+# installed chart version (`kubectl -n supply-chain get cm
+# config-policy-controller -o yaml` after install) since this wasn't
+# confirmed against a live cluster.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-policy-controller
+data:
+  no-match-policy: warn

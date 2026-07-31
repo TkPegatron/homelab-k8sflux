@@ -1,0 +1,34 @@
+---
+# EXAMPLE / TEMPLATE — not enforcing anything on its own; policy-controller
+# only verifies images that match a policy's `images` glob. This one
+# targets your own published images (ghcr.io/tkpegatron/*) rather than
+# third-party upstream images, because that's the one part of the supply
+# chain you can actually make signed today — most upstream images in this
+# cluster (jellyfin, envoyproxy, coredns, etc.) aren't cosign-signed by
+# their publishers, so a policy targeting them would just fail everything
+# until/unless that changes upstream.
+#
+# To make this real:
+#  1. Add a cosign keyless-sign step (`cosign sign`, using GitHub Actions'
+#     own OIDC token — no key management needed) to whatever workflow
+#     builds/pushes ghcr.io/tkpegatron/* images.
+#  2. Fill in the actual repo/workflow path in the subject regex below —
+#     this placeholder won't match anything real yet.
+#  3. Leave global no-match-policy: warn (../configmap-warn-mode.yaml) so
+#     nothing else in the cluster is affected by adding this.
+apiVersion: policy.sigstore.dev/v1beta1
+kind: ClusterImagePolicy
+metadata:
+  name: tkpegatron-images-keyless
+spec:
+  images:
+    - glob: "ghcr.io/tkpegatron/**"
+  authorities:
+    - keyless:
+        url: https://fulcio.sigstore.dev
+        identities:
+          - issuer: https://token.actions.githubusercontent.com
+            # Replace with your actual repo/workflow — this is a placeholder.
+            subjectRegExp: "https://github.com/TkPegatron/.+/\\.github/workflows/.+@refs/heads/main"
+      ctlog:
+        url: https://rekor.sigstore.dev

@@ -1,0 +1,20 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/helm.toolkit.fluxcd.io/helmrelease_v2.json
+# Verify the chart version against https://artifacthub.io/packages/helm/sigstore/policy-controller
+# before applying — pinned here from research, not confirmed against a
+# live install.
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: policy-controller
+spec:
+  chart:
+    spec:
+      chart: policy-controller
+      version: "0.10.6"
+      sourceRef:
+        kind: HelmRepository
+        name: sigstore
+      interval: 15m
+  interval: 1h
+  values: {}
