@@ -1,0 +1,63 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.36.0/validatingadmissionpolicy-admissionregistration-v1.json
+# Host namespaces (hostNetwork/hostPID/hostIPC) and privileged containers
+# are only admitted in the four namespaces already documented (via
+# pod-security.kubernetes.io/enforce: privileged) as needing host-level
+# access: kube-system, network, longhorn-system, openebs-system. This
+# turns that documented exception into a structural one. See ../README.md
+# for the bypass mechanism.
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: restrict-privileged-namespaces
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE"]
+        resources: ["pods"]
+  matchConditions:
+    - name: not-exempt
+      expression: >-
+        !(has(object.metadata.labels) &&
+          'policy.zynthovian.xyz/exempt-privileged' in object.metadata.labels &&
+          object.metadata.labels['policy.zynthovian.xyz/exempt-privileged'] == 'true')
+  variables:
+    - name: privilegedAllowedNamespaces
+      expression: >-
+        ['kube-system', 'network', 'longhorn-system', 'openebs-system']
+    - name: usesHostNamespaces
+      expression: >-
+        (has(object.spec.hostNetwork) && object.spec.hostNetwork) ||
+        (has(object.spec.hostPID) && object.spec.hostPID) ||
+        (has(object.spec.hostIPC) && object.spec.hostIPC)
+    - name: usesPrivilegedContainer
+      expression: >-
+        object.spec.containers.exists(c,
+          has(c.securityContext) && has(c.securityContext.privileged) && c.securityContext.privileged
+        )
+  validations:
+    - expression: >-
+        (object.metadata.namespace in variables.privilegedAllowedNamespaces) ||
+        (!variables.usesHostNamespaces && !variables.usesPrivilegedContainer)
+      messageExpression: >-
+        '"' + object.metadata.name + '" in namespace "' + object.metadata.namespace +
+        '" uses hostNetwork/hostPID/hostIPC or a privileged container outside ' +
+        'kube-system/network/longhorn-system/openebs-system. If this is a genuine ' +
+        'one-off need, label the pod policy.zynthovian.xyz/exempt-privileged: "true" ' +
+        'and explain why in the PR — otherwise move the workload or drop the requirement.'
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: restrict-privileged-namespaces
+spec:
+  policyName: restrict-privileged-namespaces
+  # Audit + Warn first — flip to [Deny] once you've confirmed nothing
+  # outside the four namespaces is actually relying on this today. See
+  # ../README.md.
+  validationActions:
+    - Audit
+    - Warn

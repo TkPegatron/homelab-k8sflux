@@ -1,0 +1,46 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.36.0/validatingadmissionpolicy-admissionregistration-v1.json
+# Every container must declare a memory limit. See ../README.md for the
+# bypass mechanism and rollout notes.
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: require-resource-limits
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE"]
+        resources: ["pods"]
+  matchConditions:
+    - name: not-exempt
+      expression: >-
+        !(has(object.metadata.labels) &&
+          'policy.zynthovian.xyz/exempt-resource-limits' in object.metadata.labels &&
+          object.metadata.labels['policy.zynthovian.xyz/exempt-resource-limits'] == 'true')
+  validations:
+    - expression: >-
+        object.spec.containers.all(c,
+          has(c.resources) && has(c.resources.limits) && 'memory' in c.resources.limits
+        )
+      messageExpression: >-
+        '"' + object.metadata.name + '" in namespace "' + object.metadata.namespace +
+        '" has a container with no memory limit set. Add spec.resources.limits.memory, ' +
+        'or if this genuinely cannot have one, label the pod ' +
+        '(not the namespace) policy.zynthovian.xyz/exempt-resource-limits: "true" and say why in the PR.'
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: require-resource-limits
+spec:
+  policyName: require-resource-limits
+  # Audit + Warn only while the existing gaps get fixed (16 of 21
+  # workloads had no resource limits when this was written). Promote to
+  # [Deny] once `kubectl get events` / your audit log show nothing new
+  # tripping it. See ../README.md.
+  validationActions:
+    - Audit
+    - Warn

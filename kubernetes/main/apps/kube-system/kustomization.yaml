@@ -10,5 +10,6 @@ resources:
   - ./cilium/ks.yaml
   - ./coredns/ks.yaml
   - ./metrics-server/ks.yaml
+  - ./pod-admission-policy/ks.yaml
   - ./reloader/ks.yaml
   - ./snapshot-controller/ks.yaml
