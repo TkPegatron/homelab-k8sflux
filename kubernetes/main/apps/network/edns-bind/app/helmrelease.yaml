@@ -13,6 +13,13 @@ spec:
     fullnameOverride: *app
     provider:
       name: rfc2136
+    # Researched mounting these as files instead of env vars (external-dns
+    # supports extraVolumes/extraVolumeMounts generally), but found no
+    # evidence the rfc2136 provider's TSIG secret/host/zone flags accept a
+    # file reference the way gluetun's `_SECRETFILE` convention does
+    # (see vpn-gateway's HelmRelease for that pattern) — they appear to be
+    # plain CLI-flag/env-var-only values in external-dns itself. Left as
+    # env vars; revisit if a future external-dns version adds file support.
     env:
       - name: &name EXTERNAL_DNS_RFC2136_HOST
         valueFrom:

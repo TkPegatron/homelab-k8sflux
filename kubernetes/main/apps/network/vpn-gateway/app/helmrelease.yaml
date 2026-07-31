@@ -26,9 +26,25 @@ spec:
             image:
               repository: docker.io/qmcgaw/gluetun
               tag: v3.41.1@sha256:1a5bf4b4820a879cdf8d93d7ef0d2d963af56670c9ebff8981860b6804ebc8ab
+            # WIREGUARD_PRIVATE_KEY is now also offered as a mounted file
+            # (gluetun's documented `<VAR>_SECRETFILE` convention) instead
+            # of only as a raw env var — see persistence.vpn-secrets below.
+            # `envFrom` is left in place deliberately: it's the only source
+            # for whatever other keys live in `pod-gateway-vpn` (provider,
+            # addresses, etc. — not visible from this repo, they're
+            # OpenBao-managed), and it's an unverified assumption that
+            # gluetun tolerates both the env var and the _SECRETFILE
+            # being set for the same credential at once. Confirm gluetun
+            # actually prefers/accepts the file on `kubernetes/testing`
+            # before removing WIREGUARD_PRIVATE_KEY from the secret, or
+            # switching this from `envFrom` to individual `env` entries so
+            # it can be excluded here.
             envFrom:
               - secretRef:
                   name: pod-gateway-vpn
+            env:
+              - name: WIREGUARD_PRIVATE_KEY_SECRETFILE
+                value: /run/secrets/gluetun/WIREGUARD_PRIVATE_KEY
             securityContext:
               capabilities:
                 add:
@@ -91,6 +107,14 @@ spec:
             gluetun:
               - path: /iptables/post-rules.txt
                 subPath: post-rules.txt
+      vpn-secrets:
+        type: secret
+        name: pod-gateway-vpn
+        advancedMounts:
+          main:
+            gluetun:
+              - path: /run/secrets/gluetun
+                readOnly: true
   postRenderers:
     - kustomize:
         patches:
