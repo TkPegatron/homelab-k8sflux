@@ -31,6 +31,28 @@ spec:
       enabled: true
     devices: bond0
     enableIPv4BIGTCP: true
+    encryption:
+      # Transparent WireGuard encryption for pod-to-pod traffic that
+      # crosses node boundaries (host-to-host on the wire). Requires
+      # in-kernel WireGuard support (Talos ships this by default).
+      #
+      # Known caveats to verify against this exact stack before promoting
+      # past `kubernetes/testing`:
+      #  - cilium/cilium#45950: pod -> local-node-IP can fail under
+      #    encryption.type=wireguard in some 1.19 configs.
+      #  - With loadBalancer.mode: dsr (as set below), north-south traffic
+      #    redirected between nodes in non-Geneve DSR dispatch isn't
+      #    encrypted by this feature — only east-west pod-to-pod is
+      #    guaranteed here.
+      #  - Interaction with bpf.datapathMode: netkit hasn't been verified
+      #    against your Cilium version; watch `cilium encrypt status` on
+      #    each node after rollout.
+      enabled: true
+      type: wireguard
+      # Only encrypts pod-to-pod. Set to true for node-to-node/pod-to-node
+      # too (kubelet health checks, etc.) once pod-to-pod is confirmed
+      # working.
+      nodeEncryption: false
     endpointRoutes:
       enabled: true
     envoy:
