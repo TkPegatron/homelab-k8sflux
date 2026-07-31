@@ -8,6 +8,7 @@ resources:
   - ./namespace.yaml
   # Flux Kustomizations
   - ./cilium/ks.yaml
+  - ./hubble/ks.yaml
   - ./coredns/ks.yaml
   - ./metrics-server/ks.yaml
   - ./reloader/ks.yaml
