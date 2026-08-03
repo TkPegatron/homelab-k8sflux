@@ -1,0 +1,15 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: cnpg-operator-allow
+spec:
+  endpointSelector: {}
+  ingress:
+    - fromEntities:
+        - kube-apiserver
+      # cnpg's admission webhook
+  # No Postgres Cluster CR exists yet (operator only). Once one is deployed,
+  # add: ingress on 5432 from whichever namespace(s) consume the database,
+  # and egress to wherever barmanObjectStore backups land. Placeholder only.

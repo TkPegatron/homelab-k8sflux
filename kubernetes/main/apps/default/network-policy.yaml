@@ -1,0 +1,26 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: default-allow
+spec:
+  endpointSelector: {}
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": "network"
+      # non-LAN/cluster egress from this namespace is tunneled to
+      # vpn-gateway, same as media (routed_namespaces includes both).
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": "network"
+      toPorts:
+        - ports:
+            - port: "3000" # homepage
+              protocol: TCP
+  # homepage's widgets (docker.yml, kubernetes.yml) may need additional
+  # egress depending on what's actually configured in
+  # homepage/app/config/*.yml — not enumerated here, revisit once you've
+  # checked Hubble for what it's actually trying to reach.

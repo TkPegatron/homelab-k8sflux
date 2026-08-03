@@ -6,5 +6,6 @@ namespace: external-secrets
 
 resources:
   - ./namespace.yaml
+  - ./network-policy.yaml
   # Flux Kustomizations
   - ./external-secrets/ks.yaml

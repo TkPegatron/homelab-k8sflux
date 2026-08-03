@@ -1,0 +1,33 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: external-secrets-allow
+spec:
+  endpointSelector: {}
+  egress:
+    - toFQDNs:
+        - matchName: "xenia.zynthovian.xyz" # confirmed in the ClusterSecretStore
+      toPorts:
+        - ports:
+            - port: "8200" # OpenBao/Vault API, confirmed
+              protocol: TCP
+  ingress:
+    - fromEntities:
+        - kube-apiserver
+      # external-secrets' own validating webhook for ExternalSecret / ClusterSecretStore
+      toPorts:
+        - ports:
+            - port: "10250" # verify
+              protocol: TCP
+    - fromEndpoints:
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": "o11y"
+      toPorts:
+        - ports:
+            - port: "8080" # verify metrics port
+              protocol: TCP
+  # Note: OpenBao calling back into this cluster's apiserver to complete the
+  # Kubernetes-auth TokenReview is external -> apiserver, not pod egress —
+  # this policy has no bearing on that flow.

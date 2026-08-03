@@ -6,6 +6,7 @@ namespace: o11y
 
 resources:
   - ./namespace.yaml
+  - ./network-policy.yaml
   # Flux Kustomizations
   - ./kube-prometheus-stack/ks.yaml
   - ./grafana-operator/ks.yaml

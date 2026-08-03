@@ -6,5 +6,6 @@ namespace: cnpg
 
 resources:
   - ./namespace.yaml
+  - ./network-policy.yaml
   # Flux Kustomizations
   - ./cnpg/ks.yaml

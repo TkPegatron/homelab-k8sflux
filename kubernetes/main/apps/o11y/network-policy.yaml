@@ -1,0 +1,66 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: o11y-ingress-from-gateway
+spec:
+  endpointSelector: {}
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": "network"
+      toPorts:
+        - ports:
+            - port: "3000" # grafana
+              protocol: TCP
+            - port: "9090" # prometheus — verify
+              protocol: TCP
+            - port: "9093" # alertmanager — verify
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: prometheus-scrape-egress
+spec:
+  endpointSelector:
+    matchLabels:
+      "app.kubernetes.io/name": "prometheus" # verify
+  egress:
+    - toEntities:
+        - cluster
+      # Prometheus's own ServiceMonitor/PodMonitor selectors already decide
+      # *which* pods and ports get scraped — this rule's only job is to stop
+      # the network layer from being the thing that blocks it. Tightening
+      # to per-namespace/per-port is the natural follow-up once exact scrape
+      # ports are confirmed (see the several "verify" ports throughout this
+      # policy set).
+    - toEntities:
+        - host
+        - remote-node
+      toPorts:
+        - ports:
+            - port: "9100" # node-exporter, if it runs hostNetwork: true
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: alertmanager-egress
+spec:
+  endpointSelector:
+    matchLabels:
+      "app.kubernetes.io/name": "alertmanager" # verify
+  egress:
+    - toFQDNs:
+        - matchName: "api.pushover.net" # Pushover's documented API host — verify against your AlertmanagerConfig
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+    # The buddy-heartbeat webhook receiver's host isn't visible in the repo
+    # (comes from the AlertmanagerConfig secret) — add a toFQDNs entry for
+    # it once you have the value; until then, that specific notification
+    # path is exactly the kind of thing to look for in Hubble as a
+    # would-be-drop (not actually blocked while policyAuditMode is on).

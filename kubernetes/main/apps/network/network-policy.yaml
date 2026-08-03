@@ -1,0 +1,140 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: envoy-internal-ingress
+spec:
+  endpointSelector:
+    matchLabels:
+      "gateway.envoyproxy.io/owning-gateway-name": "envoy-internal" # verify this is the label Envoy Gateway actually applies
+  ingress:
+    - fromCIDR:
+        - "172.22.0.0/16" # main LAN, matches vpn-gateway's own LOCAL_CIDRS convention
+      toPorts:
+        - ports:
+            - port: "80"
+              protocol: TCP
+            - port: "443"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: envoy-external-ingress
+spec:
+  endpointSelector:
+    matchLabels:
+      "gateway.envoyproxy.io/owning-gateway-name": "envoy-external" # verify
+  ingress:
+    - fromEntities:
+        - world
+      # genuinely meant to be public — nothing routes to it yet, so this
+      # rule currently has no practical effect either way.
+      toPorts:
+        - ports:
+            - port: "80"
+              protocol: TCP
+            - port: "443"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: envoy-egress-to-backends
+spec:
+  endpointSelector:
+    matchExpressions:
+      - key: "gateway.envoyproxy.io/owning-gateway-name"
+        operator: Exists
+  egress:
+    - toEndpoints: # flux-operator — flux-system
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": "flux-system"
+      toPorts:
+        - ports:
+            - port: "9292" # verify flux-operator web port
+              protocol: TCP
+    - toEndpoints: # grafana, prometheus, alertmanager, homepage's k8s widget calls stay in-namespace — o11y
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": "o11y"
+      toPorts:
+        - ports:
+            - port: "3000" # grafana
+              protocol: TCP
+            - port: "9090" # prometheus — verify
+              protocol: TCP
+            - port: "9093" # alertmanager — verify
+              protocol: TCP
+    - toEndpoints: # longhorn UI — longhorn-system
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": "longhorn-system"
+      toPorts:
+        - ports:
+            - port: "80" # verify
+              protocol: TCP
+    - toEndpoints: # jellyfin — media
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": "media"
+      toPorts:
+        - ports:
+            - port: "8096"
+              protocol: TCP
+    - toEndpoints: # homepage — default
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": "default"
+      toPorts:
+        - ports:
+            - port: "3000"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: vpn-gateway-allow
+spec:
+  endpointSelector:
+    matchLabels:
+      "app.kubernetes.io/name": "pod-gateway" # verify actual chart labels
+  egress:
+    - toEntities:
+        - world
+      # iVPN's edge servers aren't practically IP-pinnable — this is a
+      # deliberate, bounded exception, not an oversight.
+      toPorts:
+        - ports:
+            - port: "2050" # VPN_TRAFFIC_PORT from the HelmRelease
+              protocol: UDP
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": "default"
+    - fromEndpoints:
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": "media"
+      # VXLAN-encapsulated traffic from routed_namespaces. Verify the actual
+      # VXLAN port pod-gateway renders (commonly 4789 but not stated in the
+      # HelmRelease values) and pin toPorts to it once confirmed.
+    - fromEntities:
+        - kube-apiserver
+      # gateway-admision-controller is an admission webhook — the apiserver
+      # calls into it on every pod create in a labeled namespace.
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: edns-bind-egress
+spec:
+  endpointSelector:
+    matchLabels:
+      "app.kubernetes.io/name": "edns-bind" # verify
+  egress:
+    - toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+      # RFC2136 target host/port live in the edns-bind-rfc2136 Secret, not
+      # in the repo. Once known, replace this unscoped toPorts rule with a
+      # toCIDR/toFQDN limited to that specific host.
