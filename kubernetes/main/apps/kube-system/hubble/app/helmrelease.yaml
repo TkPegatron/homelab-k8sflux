@@ -1,0 +1,41 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: hubble
+spec:
+  # Reuses the same chart source as the core CNI release (see
+  # ../../cilium/app/ocirepository.yaml — bump both together, they must
+  # stay in lockstep) but renders only the Hubble Relay/UI Deployments, not
+  # a second agent/operator. Split out from the `cilium` HelmRelease
+  # because installing them in the same release made the bootstrap
+  # helmfile's `wait: true` step circular: Relay/UI pods need working pod
+  # networking to become Ready, but that release wasn't considered done
+  # (and CNI wasn't necessarily fully settled) until they did.
+  chartRef:
+    kind: OCIRepository
+    name: cilium
+  interval: 1h
+  values:
+    agent: false
+    operator:
+      enabled: false
+    hubble:
+      enabled: true
+      relay:
+        enabled: true
+        rollOutPods: true
+        prometheus:
+          serviceMonitor:
+            enabled: true
+      ui:
+        enabled: true
+        rollOutPods: true
+      tls:
+        auto:
+          # Trust the CA and per-component certs the main `cilium` release
+          # already generated (hubble-server-certs / hubble-relay-*-certs /
+          # hubble-ui-client-certs in kube-system) instead of minting a
+          # second, mutually-untrusted CA from this release.
+          enabled: false

@@ -59,15 +59,13 @@ spec:
       enabled: false
     hubble:
       enabled: true
+      # Relay/UI are deployed separately (see ../hubble/app/helmrelease.yaml)
+      # so bootstrap doesn't wait on Hubble pods to become Ready before the
+      # CNI those pods themselves depend on has finished coming up.
       relay:
-        enabled: true
-        rollOutPods: true
-        prometheus:
-          serviceMonitor:
-            enabled: true
+        enabled: false
       ui:
-        enabled: true
-        rollOutPods: true
+        enabled: false
     ipam:
       mode: kubernetes
     ipv4NativeRoutingCIDR: 10.42.0.0/16
