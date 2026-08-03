@@ -23,11 +23,13 @@ restore Job both get created around the same time — nothing stops the
 Deployment's pod from binding the PVC first, before the restore Job gets
 a chance to run.
 
-`mutatingadmissionpolicybinding.yaml` opts `${APP}`'s Deployment into
+`mutatingadmissionpolicybinding.yaml` opts `${APP}`'s Deployment (or
+StatefulSet — the policy covers either, since both expose
+`spec.replicas` at the same path) into
 `../../apps/volsync-system/volsync/app/hold-until-restored-policy.yaml`,
 a native `MutatingAdmissionPolicy` (CEL, no extra controller — same
 mechanism as `../../apps/kube-system/pod-admission-policy/`). It forces
-`spec.replicas: 0` on `${APP}`'s Deployment for as long as `${APP}-dst`
+`spec.replicas: 0` on `${APP}`'s workload for as long as `${APP}-dst`
 (the `ReplicationDestination` this component also creates) has a manual
 restore trigger set that hasn't completed yet.
 
@@ -37,10 +39,10 @@ because it keys off VolSync's own trigger/completion fields
 backup" — `replicationdestination.yaml` always sets
 `trigger.manual: restore-once`:
 
-- **Fresh bootstrap, empty repository**: the restore Job runs once,
++ **Fresh bootstrap, empty repository**: the restore Job runs once,
   finds nothing to restore, completes, `status.lastManualSync` becomes
   `"restore-once"` — the hold releases as soon as that Job finishes.
-- **Restoring real data** (e.g. after a full cluster rebuild): same
++ **Restoring real data** (e.g. after a full cluster rebuild): same
   mechanism, the Job actually has something to copy first.
 
 Either way, the Deployment never gets a chance to bind the PVC before
@@ -73,11 +75,11 @@ flux reconcile kustomization ${APP} --with-source
 
 ## Not yet verified against a live cluster
 
-- Whether `matchConditions` on a `MutatingAdmissionPolicy` can reference
++ Whether `matchConditions` on a `MutatingAdmissionPolicy` can reference
   `params` (used here to read the `ReplicationDestination`'s status) —
   written from the admission API's documented design, not confirmed
   against your exact 1.36 build.
-- Whether your installed `kustomize` version's cluster-scoped-resource
++ Whether your installed `kustomize` version's cluster-scoped-resource
   list already includes `MutatingAdmissionPolicyBinding` /
   `ValidatingAdmissionPolicyBinding` — if not, the namespace transformer
   from a Kustomization's `targetNamespace` could incorrectly stamp a
