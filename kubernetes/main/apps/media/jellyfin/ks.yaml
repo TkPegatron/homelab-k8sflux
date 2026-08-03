@@ -12,7 +12,6 @@ spec:
   postBuild:
     substitute:
       APP: jellyfin
-      APP_NAMESPACE: media
       VOLSYNC_CAPACITY: 5Gi
   prune: true
   sourceRef:
