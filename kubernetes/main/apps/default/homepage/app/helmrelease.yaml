@@ -24,6 +24,7 @@ spec:
             env:
               TZ: America/New_York
               HOMEPAGE_ALLOWED_HOSTS: "*"
+              LOG_LEVEL: debug
             probes:
               liveness:
                 enabled: true
