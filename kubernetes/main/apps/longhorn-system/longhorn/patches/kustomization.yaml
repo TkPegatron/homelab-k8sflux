@@ -2,22 +2,5 @@
 # yaml-language-server: $schema=https://json.schemastore.org/kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-patches:
-  - path: ./node-amd64-server-7f97c6.yaml
-    target:
-      kind: Node
-      group: longhorn.io
-      version: v1beta2
-      name: amd64-server-7f97c6
-  - path: ./node-amd64-server-a2e7bb.yaml
-    target:
-      kind: Node
-      group: longhorn.io
-      version: v1beta2
-      name: amd64-server-a2e7bb
-  - path: ./node-amd64-server-b5915c.yaml
-    target:
-      kind: Node
-      group: longhorn.io
-      version: v1beta2
-      name: amd64-server-b5915c
+resources:
+  - ./configmap.yaml

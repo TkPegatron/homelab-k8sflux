@@ -1,0 +1,8 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: longhorn-patch-dummy
+  namespace: longhorn-system
+data:
+  dummy: "this exists to keep Flux happy"

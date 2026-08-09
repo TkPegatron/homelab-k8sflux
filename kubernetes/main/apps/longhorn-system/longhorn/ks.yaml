@@ -30,3 +30,58 @@ spec:
     name: cluster-flux-public
     namespace: flux-system
   targetNamespace: longhorn-system
+  patches:
+    - target:
+        kind: Node
+        group: longhorn.io
+        version: v1beta2
+        name: amd64-server-7f97c6
+      patch: |-
+        apiVersion: longhorn.io/v1beta2
+        kind: Node
+        metadata:
+          name: amd64-server-7f97c6
+        spec:
+          disks:
+            EVO-970-2TiB:
+              allowScheduling: true
+              evictionRequested: false
+              path: /var/mnt/longhorn
+              storageReserved: 0
+              tags: []
+    - target:
+        kind: Node
+        group: longhorn.io
+        version: v1beta2
+        name: amd64-server-a2e7bb
+      patch: |-
+        apiVersion: longhorn.io/v1beta2
+        kind: Node
+        metadata:
+          name: amd64-server-a2e7bb
+        spec:
+          disks:
+            EVO-970-2TiB:
+              allowScheduling: true
+              evictionRequested: false
+              path: /var/mnt/longhorn
+              storageReserved: 0
+              tags: []
+    - target:
+        kind: Node
+        group: longhorn.io
+        version: v1beta2
+        name: amd64-server-b5915c
+      patch: |-
+        apiVersion: longhorn.io/v1beta2
+        kind: Node
+        metadata:
+          name: amd64-server-b5915c
+        spec:
+          disks:
+            EVO-970-2TiB:
+              allowScheduling: true
+              evictionRequested: false
+              path: /var/mnt/longhorn
+              storageReserved: 0
+              tags: []
