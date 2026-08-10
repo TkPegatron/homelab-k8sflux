@@ -13,10 +13,12 @@
 # Does NOT do the OIDC token-refresh dance itself — that's the whole
 # point (see kube-system/oidc-broker/README.md for why FreeLens drops
 # tokens under the direct-OIDC approach). Instead:
-#   1. Reuses OpenBao's own cached CLI token (~/.bao-token) if still
-#      valid, only opening a browser for `bao login -method=oidc` when
-#      that session has actually expired — normally much less often
-#      than the short-lived Kubernetes credential itself.
+#   1. Reuses OpenBao's own cached CLI token (~/.vault-token — kept at
+#      that path for Vault CLI compatibility; override with
+#      BAO_TOKEN_PATH) if still valid, only opening a browser for
+#      `bao login -method=oidc` when that session has actually expired
+#      — normally much less often than the short-lived Kubernetes
+#      credential itself.
 #   2. Reads a fresh, short-lived Kubernetes ServiceAccount token from
 #      OpenBao's kubernetes secrets engine.
 #   3. Prints it as an ExecCredential — client-go re-invokes this script
