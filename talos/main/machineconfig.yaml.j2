@@ -130,6 +130,25 @@ cluster:
     extraArgs:
       enable-aggregator-routing: "true"
       feature-gates: HPAScaleToZero=true
+      # OIDC authentication — fill in the real issuer/client-id matching
+      # whatever's configured in prod. No client secret is needed here:
+      # the apiserver only verifies the token's signature against the
+      # issuer's published JWKS and checks the `aud` claim against
+      # oidc-client-id — the OAuth2 authorization-code exchange (where a
+      # client secret, if any, would matter) happens entirely client-side
+      # in kubelogin/oidc-login, not here.
+      oidc-issuer-url: "https://your-idp.example" # verify: matches prod's issuer
+      oidc-client-id: "kubernetes" # verify: matches prod's registered client ID
+      oidc-username-claim: "email"
+      oidc-username-prefix: "oidc:"
+      oidc-groups-claim: "groups"
+      oidc-groups-prefix: "oidc:"
+      # Only needed if the IdP's TLS cert isn't already in the apiserver's
+      # trust store (e.g. a self-hosted IdP on an internal-only CA rather
+      # than the public letsencrypt-production issuer already used
+      # elsewhere in this repo). Uncomment and point at a CA file wired in
+      # via machine.files if so:
+      # oidc-ca-file: /etc/kubernetes/oidc-ca.crt
     image: registry.k8s.io/kube-apiserver:v1.36.1
   controllerManager:
     extraArgs:

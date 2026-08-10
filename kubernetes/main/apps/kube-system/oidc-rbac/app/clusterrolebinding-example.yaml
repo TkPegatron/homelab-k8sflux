@@ -1,0 +1,38 @@
+---
+# EXAMPLE — replace the group names with your real OIDC group claim
+# values before relying on this. Same pattern already used for
+# flux-web-admin (../../flux-system/operator/app/clusterrolebinding.yaml):
+# a ClusterRoleBinding to `kind: Group`, where the group name is whatever
+# the token's oidc-groups-claim contains, prefixed with oidc-groups-prefix
+# (../cilium/app/helmrelease.yaml sibling ../../talos/main/machineconfig.yaml.j2
+# sets that prefix to "oidc:").
+#
+# If your IdP puts the caller in a group literally named "k8s-admins",
+# and oidc-groups-prefix is "oidc:", the group Kubernetes sees is
+# "oidc:k8s-admins" — that's what belongs on the left below, not the raw
+# IdP group name.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: oidc-admins
+subjects:
+  - kind: Group
+    name: "oidc:k8s-admins" # placeholder — verify against your IdP's actual group claim
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: oidc-viewers
+subjects:
+  - kind: Group
+    name: "oidc:k8s-viewers" # placeholder — verify against your IdP's actual group claim
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: view
+  apiGroup: rbac.authorization.k8s.io
