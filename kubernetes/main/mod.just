@@ -106,3 +106,74 @@ openbao:
         token_reviewer_jwt=@<(echo "$TOKEN"); then
         just log fatal "Failed to write OpenBAO Kubernetes auth config" "stage" "$(basename "$0")"
     fi
+
+[doc('One-time bootstrap of the OIDC-to-Vault-broker auth path (see kube-system/oidc-broker/README.md). Rerunning is safe/idempotent; the daily CronJob keeps the service_account_jwt fresh afterward — this only needs to run once, or again if the OIDC client secret rotates.')]
+[script]
+openbao-broker:
+    just log info "Running stage..." "stage" "$(basename "$0")"
+
+    : "${OIDC_ISSUER_URL:?Set OIDC_ISSUER_URL to your IdP's discovery URL}"
+    : "${OIDC_CLIENT_ID:?Set OIDC_CLIENT_ID to the client registered for OpenBao}"
+    : "${OIDC_CLIENT_SECRET:?Set OIDC_CLIENT_SECRET — do not commit this anywhere}"
+
+    TOKEN="$(kubectl create token openbao-k8s-broker -n kube-system --duration=48h)"
+    CA_CERT="$(talosctl cat /etc/kubernetes/pki/ca.crt)"
+
+    # Kubernetes secrets engine — mints short-lived K8s ServiceAccount
+    # tokens on demand, mounted at a distinct path from the kubernetes
+    # *auth* method above so the two don't get confused in docs/logs.
+    if ! bao secrets list -format=json | jq -e 'has("k8s-broker/")' >/dev/null; then
+        bao secrets enable -path=k8s-broker kubernetes
+    fi
+    bao write k8s-broker/config \
+        kubernetes_host="https://k8s.zynthovian.xyz:6443" \
+        kubernetes_ca_cert=@<(echo "$CA_CERT") \
+        service_account_jwt=@<(echo "$TOKEN")
+    bao write k8s-broker/roles/admin \
+        allowed_kubernetes_namespaces="kube-system" \
+        service_account_name="oidc-broker-admin" \
+        token_default_ttl="15m" \
+        token_max_ttl="30m"
+    bao write k8s-broker/roles/viewer \
+        allowed_kubernetes_namespaces="kube-system" \
+        service_account_name="oidc-broker-viewer" \
+        token_default_ttl="15m" \
+        token_max_ttl="30m"
+
+    # OIDC auth method — how a human proves who they are to OpenBao itself,
+    # before OpenBao decides whether to hand them a k8s-broker credential.
+    if ! bao auth list -format=json | jq -e 'has("oidc/")' >/dev/null; then
+        bao auth enable oidc
+    fi
+    bao write auth/oidc/config \
+        oidc_discovery_url="$OIDC_ISSUER_URL" \
+        oidc_client_id="$OIDC_CLIENT_ID" \
+        oidc_client_secret="$OIDC_CLIENT_SECRET" \
+        default_role="k8s-broker-login"
+    bao write auth/oidc/role/k8s-broker-login \
+        bound_audiences="$OIDC_CLIENT_ID" \
+        allowed_redirect_uris="http://localhost:8250/oidc/callback" \
+        user_claim="email" \
+        groups_claim="groups" \
+        policies="default"
+
+    # Rotator's own path to OpenBao: authenticates via this cluster's
+    # existing auth/kubernetes method (same one external-secrets uses),
+    # scoped to only updating k8s-broker/config.
+    # (printf, not a heredoc — heredoc terminators are indentation-sensitive
+    # in ways that don't mix well with `just`'s own recipe-body indentation.)
+    printf 'path "k8s-broker/config" {\n  capabilities = ["create", "update"]\n}\n' \
+        | bao policy write k8s-broker-rotator -
+    bao write auth/kubernetes/role/k8s-broker-rotator \
+        bound_service_account_names="openbao-token-rotator" \
+        bound_service_account_namespaces="kube-system" \
+        policies="k8s-broker-rotator" \
+        ttl="15m"
+
+    # ACL policies gating who can read which broker role — bind these to
+    # real OIDC groups via `bao write identity/group ...` separately;
+    # placeholders here don't grant anything until that mapping exists.
+    printf 'path "k8s-broker/creds/admin" {\n  capabilities = ["read"]\n}\n' \
+        | bao policy write k8s-broker-admin -
+    printf 'path "k8s-broker/creds/viewer" {\n  capabilities = ["read"]\n}\n' \
+        | bao policy write k8s-broker-viewer -

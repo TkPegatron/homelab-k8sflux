@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# kubectl/FreeLens exec-credential plugin. Wired into a kubeconfig like:
+#
+#   users:
+#     - name: oidc-broker-admin
+#       user:
+#         exec:
+#           apiVersion: client.authentication.k8s.io/v1
+#           command: bao-k8s-login
+#           args: ["admin"]
+#           interactiveMode: IfAvailable
+#
+# Does NOT do the OIDC token-refresh dance itself — that's the whole
+# point (see kube-system/oidc-broker/README.md for why FreeLens drops
+# tokens under the direct-OIDC approach). Instead:
+#   1. Reuses OpenBao's own cached CLI token (~/.bao-token) if still
+#      valid, only opening a browser for `bao login -method=oidc` when
+#      that session has actually expired — normally much less often
+#      than the short-lived Kubernetes credential itself.
+#   2. Reads a fresh, short-lived Kubernetes ServiceAccount token from
+#      OpenBao's kubernetes secrets engine.
+#   3. Prints it as an ExecCredential — client-go re-invokes this script
+#      on its own once the token nears expirationTimestamp, the same
+#      ordinary mechanism every kubectl exec plugin uses. No refresh
+#      token, no browser popup on every renewal.
+set -euo pipefail
+
+role="${1:?usage: bao-k8s-login <admin|viewer>}"
+
+export BAO_ADDR="${BAO_ADDR:-https://xenia.zynthovian.xyz:8200}"
+
+if ! bao token lookup >/dev/null 2>&1; then
+  bao login -method=oidc -no-print >&2
+fi
+
+creds="$(bao read -format=json "k8s-broker/creds/${role}")"
+token="$(echo "$creds" | jq -r '.data.service_account_token')"
+lease_seconds="$(echo "$creds" | jq -r '.lease_duration')"
+expires="$(date -u -d "+${lease_seconds} seconds" +%Y-%m-%dT%H:%M:%SZ)"
+
+jq -n \
+  --arg token "$token" \
+  --arg expiry "$expires" \
+  '{
+    apiVersion: "client.authentication.k8s.io/v1",
+    kind: "ExecCredential",
+    status: {
+      token: $token,
+      expirationTimestamp: $expiry
+    }
+  }'

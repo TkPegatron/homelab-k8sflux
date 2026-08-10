@@ -1,0 +1,98 @@
+---
+# Public CA cert only (matches the same content already committed
+# unencrypted at /custom-authority.yaml at the repo root — this is not
+# secret material, just the CA OpenBao's own TLS cert chains to).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: openbao-ca
+data:
+  ca.crt: |
+    -----BEGIN CERTIFICATE-----
+    MIIC9zCCAn6gAwIBAgIUP+m/ni51/ZkzdW8Y3GPJulrT/2kwCgYIKoZIzj0EAwMw
+    eTEmMCQGA1UECgwdWnludGhvdmlhbiBJbnRlcnN0ZWxsYXIgVW5pb24xKDAmBgNV
+    BAsMH0RpZ2l0YWwgSW5mcmFzdHJ1Y3R1cmUgU2VydmljZXMxJTAjBgNVBAMMHFJv
+    b3QgQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkwHhcNMjQwOTE2MDAwMDAwWhcNMzQw
+    OTE4MDAwMDAwWjB5MSYwJAYDVQQKDB1aeW50aG92aWFuIEludGVyc3RlbGxhciBV
+    bmlvbjEoMCYGA1UECwwfRGlnaXRhbCBJbmZyYXN0cnVjdHVyZSBTZXJ2aWNlczEl
+    MCMGA1UEAwwcUm9vdCBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTB2MBAGByqGSM49
+    AgEGBSuBBAAiA2IABNiyroVO4PiMV8iQBv2ER0Qb/RdsX5k3OmAtaH4pIhyLcXHe
+    8MdzYdMmnKJKHCBH24cXUQPX1Hm8uq1afxt3yYIVJyzcXXef/3xz2Y0uSpXZrBoJ
+    mNqbtCtD8pAL2Oq5G6OBxjCBwzAOBgNVHQ8BAf8EBAMCAQYwDwYDVR0TAQH/BAUw
+    AwEB/zAdBgNVHQ4EFgQU8ywVEcGb+Wz3akgNXLymh9gu474wHwYDVR0jBBgwFoAU
+    8ywVEcGb+Wz3akgNXLymh9gu474wNAYHKwYBBAF6AQQpDCdFbGxpYW5hIFBlcnJ5
+    IDxlbGxpYW5hLnBlcnJ5QGdtYWlsLmNvbT4wKgYHKwYBBAF6AgQfDB1Ib21lbGFi
+    IENlcnRpZmljYXRlIEF1dGhvcml0eTAKBggqhkjOPQQDAwNnADBkAjA7ajmZIkDL
+    lpWWCbeYajQax59Xuv96kqVLKEHGtBmX9C9t0SJdXTiYQgFrwWvI+7YCMAc4mku6
+    YHUmHnwIv1aE1uDJgENEg+0JPHYzuV+dSn0RIEmoq8FvNmlf1Cqs1wzlZA==
+    -----END CERTIFICATE-----
+---
+# Rotates openbao-k8s-broker's token daily so nothing static/long-lived
+# sits in OpenBao's kubernetes secrets engine config. Needs
+# alpine/k8s (kubectl + curl + jq bundled) — pin this to a digest before
+# relying on it; left floating here because no digest was looked up
+# against a registry for this branch.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: openbao-broker-token-rotate
+spec:
+  schedule: "17 3 * * *" # once daily; must stay well under the token's own max TTL
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          serviceAccountName: openbao-token-rotator
+          restartPolicy: Never
+          automountServiceAccountToken: true
+          volumes:
+            - name: ca
+              configMap:
+                name: openbao-ca
+          containers:
+            - name: rotate
+              image: alpine/k8s:1.30.4 # verify/pin digest before relying on this
+              volumeMounts:
+                - name: ca
+                  mountPath: /etc/openbao
+                  readOnly: true
+              env:
+                - name: OPENBAO_ADDR
+                  value: "https://xenia.zynthovian.xyz:8200"
+                - name: KUBE_SA_TOKEN_PATH
+                  value: "/var/run/secrets/kubernetes.io/serviceaccount/token"
+              command:
+                - /bin/sh
+                - -euc
+                - |
+                  # 1. Authenticate to OpenBao as *this* pod (openbao-token-rotator),
+                  #    via the same auth/kubernetes method external-secrets already uses.
+                  #    jq --rawfile builds the JSON payload so the JWT is escaped
+                  #    correctly rather than hand-interpolated into a string.
+                  LOGIN_PAYLOAD="$(jq -n --rawfile jwt "$KUBE_SA_TOKEN_PATH" \
+                    '{role: "k8s-broker-rotator", jwt: $jwt}')"
+                  VAULT_TOKEN="$(curl -sf --cacert /etc/openbao/ca.crt \
+                    --request POST --data "$LOGIN_PAYLOAD" \
+                    "$OPENBAO_ADDR/v1/auth/kubernetes/login" | jq -r '.auth.client_token')"
+
+                  # 2. Mint a fresh token for openbao-k8s-broker — the *only*
+                  #    ServiceAccount this pod's own RBAC lets it request one for.
+                  NEW_JWT="$(kubectl create token openbao-k8s-broker -n kube-system --duration=48h)"
+
+                  # 3. Push it into the kubernetes secrets engine's config, re-sending
+                  #    kubernetes_ca_cert every time: OpenBao's config write replaces
+                  #    the whole object, not a partial patch — omitting it here would
+                  #    silently wipe OpenBao's trust of the apiserver's TLS cert.
+                  #    That CA is the *cluster's* CA (mounted into every pod), not
+                  #    OpenBao's own TLS CA (the --cacert flag above) — two different
+                  #    CAs serving two different trust relationships in this script.
+                  CONFIG_PAYLOAD="$(jq -n \
+                    --rawfile ca /var/run/secrets/kubernetes.io/serviceaccount/ca.crt \
+                    --arg jwt "$NEW_JWT" \
+                    '{kubernetes_host: "https://k8s.zynthovian.xyz:6443", kubernetes_ca_cert: $ca, service_account_jwt: $jwt}')"
+                  curl -sf --cacert /etc/openbao/ca.crt \
+                    --header "X-Vault-Token: $VAULT_TOKEN" \
+                    --request POST --data "$CONFIG_PAYLOAD" \
+                    "$OPENBAO_ADDR/v1/k8s-broker/config"
