@@ -2,9 +2,9 @@
 version: v1alpha1
 machine:
   ca:
-    crt: ref+vault://kubernetes/cluster#machine_ca_crt
+    crt: ref+vault://kubernetes-main/talos-cluster#machine_ca_crt
     {% if ENV.CONTROLPLANE %}
-    key: ref+vault://kubernetes/cluster#machine_ca_key
+    key: ref+vault://kubernetes-main/talos-cluster#machine_ca_key
     {% endif %}
   features:
     apidCheckExtKeyUsage: true
@@ -47,11 +47,11 @@ machine:
         wsize=1048576
         resvport=True
   install:
-    diskSelector:
-      type: nvme
     image: factory.talos.dev/metal-installer-secureboot/{{ ENV.SCHEMATIC }}:v1.13.5
     #image: factory.talos.dev/metal-installer/{{ ENV.SCHEMATIC }}:v1.13.2
     wipe: true
+    diskSelector:
+      type: nvme
   kubelet:
     defaultRuntimeSeccompProfileEnabled: true
     disableManifestsDirectory: true
@@ -85,12 +85,12 @@ machine:
     sunrpc.tcp_slot_table_entries: "128"
     user.max_user_namespaces: "11255"
     vm.nr_hugepages: "1024"
-  token: ref+vault://kubernetes/cluster#machine_token
+  token: ref+vault://kubernetes-main/talos-cluster#machine_token
 cluster:
   ca:
-    crt: ref+vault://kubernetes/cluster#cluster_ca_crt
+    crt: ref+vault://kubernetes-main/talos-cluster#cluster_ca_crt
     {% if ENV.CONTROLPLANE %}
-    key: ref+vault://kubernetes/cluster#cluster_ca_key
+    key: ref+vault://kubernetes-main/talos-cluster#cluster_ca_key
     {% endif %}
   clusterName: {{ ENV.CLUSTER }}
   controlPlane:
@@ -102,7 +102,7 @@ cluster:
         disabled: true
       service:
         disabled: false
-  id: ref+vault://kubernetes/cluster#cluster_id
+  id: ref+vault://kubernetes-main/talos-cluster#cluster_id
   network:
     cni:
       name: none
@@ -111,12 +111,12 @@ cluster:
       - 10.42.0.0/16
     serviceSubnets:
       - 10.43.0.0/16
-  secret: ref+vault://kubernetes/cluster#cluster_secret
-  token: ref+vault://kubernetes/cluster#cluster_token
+  secret: ref+vault://kubernetes-main/talos-cluster#cluster_secret
+  token: ref+vault://kubernetes-main/talos-cluster#cluster_token
   {% if ENV.CONTROLPLANE %}
   aggregatorCA:
-    crt: ref+vault://kubernetes/cluster#cluster_aggregatorca_crt
-    key: ref+vault://kubernetes/cluster#cluster_aggregatorca_key
+    crt: ref+vault://kubernetes-main/talos-cluster#cluster_aggregatorca_crt
+    key: ref+vault://kubernetes-main/talos-cluster#cluster_aggregatorca_key
   allowSchedulingOnControlPlanes: true
   apiServer:
     auditPolicy:
@@ -142,8 +142,8 @@ cluster:
     advertisedSubnets:
       - 172.22.0.0/25
     ca:
-      crt: ref+vault://kubernetes/cluster#cluster_etcd_ca_crt
-      key: ref+vault://kubernetes/cluster#cluster_etcd_ca_key
+      crt: ref+vault://kubernetes-main/talos-cluster#cluster_etcd_ca_crt
+      key: ref+vault://kubernetes-main/talos-cluster#cluster_etcd_ca_key
     extraArgs:
       listen-metrics-urls: http://0.0.0.0:2381
   proxy:
@@ -170,43 +170,20 @@ cluster:
     extraArgs:
       bind-address: 0.0.0.0
     image: registry.k8s.io/kube-scheduler:v1.36.1
-  secretboxEncryptionSecret: ref+vault://kubernetes/cluster#cluster_secretboxencryptionsecret
+  secretboxEncryptionSecret: ref+vault://kubernetes-main/talos-cluster#cluster_secretboxencryptionsecret
   serviceAccount:
-    key: ref+vault://kubernetes/cluster#cluster_serviceaccount_key
+    key: ref+vault://kubernetes-main/talos-cluster#cluster_serviceaccount_key
   {% endif %}
-#---
-#apiVersion: v1alpha1
-#kind: VolumeConfig
-#name: STATE
-#encryption:
-#  provider: luks2
-#  keys:
-#    - slot: 0
-#      kms:
-#        endpoint: "http://172.22.0.1:4050"
-#---
-#apiVersion: v1alpha1
-#kind: VolumeConfig
-#name: EPHEMERAL
-#encryption:
-#  provider: luks2
-#  keys:
-#    - slot: 0
-#      kms:
-#        endpoint: "http://172.22.0.1:4050"
 ---
 apiVersion: v1alpha1
-kind: BondConfig
-name: bond0
-links:
-  - net0
-bondMode: active-backup
-mtu: 1500
----
-apiVersion: v1alpha1
-kind: DHCPv4Config
-name: bond0
-clientIdentifier: mac
+kind: VolumeConfig
+name: EPHEMERAL
+encryption:
+  provider: luks2
+  keys:
+    - slot: 0
+      kms:
+        endpoint: "http://xenia.zynthovian.xyz:4050"
 ---
 apiVersion: v1alpha1
 kind: ResolverConfig
@@ -220,3 +197,26 @@ apiVersion: v1alpha1
 kind: WatchdogTimerConfig
 device: /dev/watchdog0
 timeout: 5m
+---
+apiVersion: v1alpha1
+kind: TrustedRootsConfig
+name: homelab-ca
+certificates: |
+  -----BEGIN CERTIFICATE-----
+  MIIC9zCCAn6gAwIBAgIUP+m/ni51/ZkzdW8Y3GPJulrT/2kwCgYIKoZIzj0EAwMw
+  eTEmMCQGA1UECgwdWnludGhvdmlhbiBJbnRlcnN0ZWxsYXIgVW5pb24xKDAmBgNV
+  BAsMH0RpZ2l0YWwgSW5mcmFzdHJ1Y3R1cmUgU2VydmljZXMxJTAjBgNVBAMMHFJv
+  b3QgQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkwHhcNMjQwOTE2MDAwMDAwWhcNMzQw
+  OTE4MDAwMDAwWjB5MSYwJAYDVQQKDB1aeW50aG92aWFuIEludGVyc3RlbGxhciBV
+  bmlvbjEoMCYGA1UECwwfRGlnaXRhbCBJbmZyYXN0cnVjdHVyZSBTZXJ2aWNlczEl
+  MCMGA1UEAwwcUm9vdCBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTB2MBAGByqGSM49
+  AgEGBSuBBAAiA2IABNiyroVO4PiMV8iQBv2ER0Qb/RdsX5k3OmAtaH4pIhyLcXHe
+  8MdzYdMmnKJKHCBH24cXUQPX1Hm8uq1afxt3yYIVJyzcXXef/3xz2Y0uSpXZrBoJ
+  mNqbtCtD8pAL2Oq5G6OBxjCBwzAOBgNVHQ8BAf8EBAMCAQYwDwYDVR0TAQH/BAUw
+  AwEB/zAdBgNVHQ4EFgQU8ywVEcGb+Wz3akgNXLymh9gu474wHwYDVR0jBBgwFoAU
+  8ywVEcGb+Wz3akgNXLymh9gu474wNAYHKwYBBAF6AQQpDCdFbGxpYW5hIFBlcnJ5
+  IDxlbGxpYW5hLnBlcnJ5QGdtYWlsLmNvbT4wKgYHKwYBBAF6AgQfDB1Ib21lbGFi
+  IENlcnRpZmljYXRlIEF1dGhvcml0eTAKBggqhkjOPQQDAwNnADBkAjA7ajmZIkDL
+  lpWWCbeYajQax59Xuv96kqVLKEHGtBmX9C9t0SJdXTiYQgFrwWvI+7YCMAc4mku6
+  YHUmHnwIv1aE1uDJgENEg+0JPHYzuV+dSn0RIEmoq8FvNmlf1Cqs1wzlZA==
+  -----END CERTIFICATE-----

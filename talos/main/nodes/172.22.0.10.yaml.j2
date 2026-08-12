@@ -9,3 +9,30 @@ kind: LinkAliasConfig
 name: net0
 selector:
   match: mac(link.permanent_addr) == "b8:85:84:b5:91:5c"
+---
+apiVersion: v1alpha1
+kind: BondConfig
+name: bond0
+links:
+  - net0
+bondMode: active-backup
+mtu: 1500
+---
+apiVersion: v1alpha1
+kind: DHCPv4Config
+name: bond0
+clientIdentifier: mac
+---
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: longhorn
+provisioning:
+  diskSelector:
+    match: disk.wwid == "naa.5002538f3371d0c5" && !system_disk
+  minSize: 1TB
+  grow: false
+encryption:
+  provider: luks2
+  keys:
+    - nodeID: {}
+      slot: 0
