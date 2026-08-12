@@ -9,3 +9,10 @@
     - RustFS:
         href: https://xenia.zynthovian.xyz:9001
         description: Reliable distributed file system
+- Network Management:
+    - Gluetun:
+        icon: gluetun.png
+        widget:
+            type: gluetun
+            url: http://gluetun.network.svc.cluster.local:8000
+            version: 2

@@ -49,6 +49,11 @@ spec:
             image:
               repository: ghcr.io/angelnu/gateway-admision-controller
               tag: dev@sha256:17e9bc66f9ccaa004db53dd9e55247e2da37c6912a251c36b33fab3a283a8d42
+    service:
+      gluetun:
+        ports:
+          http:
+            port: 8000
     networkpolicies:
       main:
         enabled: false
@@ -60,8 +65,8 @@ spec:
       VPN_INTERFACE: "wg0"
       VPN_TRAFFIC_PORT: 2050
       VPN_BLOCK_OTHER_TRAFFIC: true
-      VPN_LOCAL_CIDRS: "10.42.0.0/16 10.43.0.0/16 172.22.0.0/16 192.168.122.0/24"
-      NOT_ROUTED_TO_GATEWAY_CIDRS: "10.42.0.0/16 10.43.0.0/16 172.22.0.0/16 192.168.122.0/24"
+      VPN_LOCAL_CIDRS: "10.42.0.0/16 10.43.0.0/16 172.22.0.0/16"
+      NOT_ROUTED_TO_GATEWAY_CIDRS: "10.42.0.0/16 10.43.0.0/16 172.22.0.0/16"
     webhook:
       gatewayDefault: false
       gatewayAnnotation: vpn.home.arpa/tunnel
@@ -76,21 +81,27 @@ spec:
               operator: In
               values: ['ivpn']
     configMaps:
-      gluetun:
-        forceRename: gluetun-iptables
+      gluetun-config:
         data:
           post-rules.txt: |-
             iptables -A INPUT -p icmp -i eth0 -j ACCEPT
             iptables -A INPUT -p udp --dport 8472 -i eth0 -j ACCEPT
+          auth_config.toml: |-
+            [[roles]]
+            name = "status"
+            routes = ["GET /v1/publicip/ip", "GET /v1/vpn/status"]
+            auth = "none"
     persistence:
-      gluetun:
+      gluetun-config:
         type: configMap
-        name: gluetun-iptables
+        name: gluetun-config
         advancedMounts:
           main:
             gluetun:
               - path: /iptables/post-rules.txt
                 subPath: post-rules.txt
+              - path: /gluetun/auth/config.toml
+                subPath: auth_config.toml
   postRenderers:
     - kustomize:
         patches:
