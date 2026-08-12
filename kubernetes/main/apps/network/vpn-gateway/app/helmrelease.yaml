@@ -1,3 +1,5 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -51,6 +53,7 @@ spec:
               tag: dev@sha256:17e9bc66f9ccaa004db53dd9e55247e2da37c6912a251c36b33fab3a283a8d42
     service:
       gluetun:
+        controller: main
         ports:
           http:
             port: 8000
