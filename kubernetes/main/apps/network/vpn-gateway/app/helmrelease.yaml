@@ -85,6 +85,7 @@ spec:
               values: ['ivpn']
     configMaps:
       gluetun-config:
+        forceRename: gluetun-config
         data:
           post-rules.txt: |-
             iptables -A INPUT -p icmp -i eth0 -j ACCEPT
