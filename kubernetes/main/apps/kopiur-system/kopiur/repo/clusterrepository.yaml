@@ -16,6 +16,9 @@ spec:
       bucket: kopiur
       endpoint: xenia.zynthovian.xyz:9000
       region: us-east-1
+      tls:
+        caBundleRef:
+          configMapName: s3-private-ca
   encryption:
     passwordSecretRef:
       name: kopiur-repository-secret
