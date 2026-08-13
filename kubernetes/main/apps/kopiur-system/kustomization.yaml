@@ -2,13 +2,12 @@
 # yaml-language-server: $schema=https://json.schemastore.org/kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: media
+namespace: kopiur-system
 
 components:
+  - ../../components/alerts
   - ../../components/kopiur/secret
 
 resources:
   - ./namespace.yaml
-  - ./network-policy.yaml
-  # Flux Kustomizations
-  - ./jellyfin/ks.yaml
+  - ./kopiur/ks.yaml

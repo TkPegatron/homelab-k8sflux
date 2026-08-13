@@ -1,0 +1,26 @@
+# secrets-prometheus-rules.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: external-secrets-alerts
+spec:
+  groups:
+    - name: external-secrets
+      rules:
+        - alert: ExternalSecretSyncFailed
+          expr: |
+            externalsecret_status_condition{condition="Ready", status="False"} == 1
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "ExternalSecret sync failed"
+
+        - alert: VaultUnsealed
+          expr: |
+            vault_core_unsealed == 0
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Vault is sealed"
