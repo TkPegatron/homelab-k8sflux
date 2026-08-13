@@ -1,5 +1,5 @@
 {
-  description = "jekyll development environment";
+  description = "homelab-k8sflux development environment";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
@@ -60,12 +60,14 @@
           ] ++ [
             kubectl
             kubescape
-            # Kubectl addons
             kubectl-cnpg
             kubectl-graph
+            kubelogin-oidc
           ];
 
           shellHook = ''
+            export TZ="America/Detroit"
+            export TZDIR="${pkgs.tzdata}/share/zoneinfo"
             echo "Ready!"
           '';
         };
