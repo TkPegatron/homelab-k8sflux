@@ -29,7 +29,7 @@ spec:
   dependsOn:
     - name: kopiur
   interval: 1h
-  path: ./kubernetes/main/apps/kopiur-system/kopiur/repository
+  path: ./kubernetes/main/apps/kopiur-system/kopiur/repo
   prune: true
   sourceRef:
     kind: GitRepository
