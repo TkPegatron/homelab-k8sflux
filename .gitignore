@@ -8,3 +8,4 @@ kubernetes/main/applications/***
 kubernetes/old
 talos/talos-v1.13.2-fadf0915.iso
 .render
+.claude/worktrees

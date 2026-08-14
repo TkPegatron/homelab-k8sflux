@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(timeout 180 podman run --rm docker.io/nixos/nix:latest sh -c ' *)",
+      "Bash(timeout 60 podman run --rm docker.io/nixos/nix:latest sh -c ' *)",
+      "Bash(mkdir -p /tmp/claude-1000/podman-uid-test)",
+      "Read(//tmp/claude-1000/**)",
+      "Bash(podman run *)",
+      "Bash(rm -rf /tmp/claude-1000/podman-uid-test)",
+      "Bash(curl -s \"https://raw.githubusercontent.com/lunapageofspace/NixOS/main/modules/home/home-manager/shell-environment/zsh.nix\")",
+      "Bash(curl -s \"https://raw.githubusercontent.com/lunapageofspace/NixOS/main/modules/home/home-manager/shell-environment/starship.nix\")",
+      "Bash(curl -s \"https://raw.githubusercontent.com/lunapageofspace/NixOS/main/modules/home/home-manager/users/elliana/gpg.nix\")"
+    ]
+  }
+}
