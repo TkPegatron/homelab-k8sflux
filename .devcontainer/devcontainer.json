@@ -2,27 +2,22 @@
   "name": "Kubernetes",
   "build": {
     "dockerfile": "./Dockerfile",
-    "args": {
-      "USERNAME": "${localEnv:USER}",
-      "VARIANT": "edge",
-      "UID": "1000"
-    }
+    "context": ".."
   },
-  "runArgs": [
-    "--userns=keep-id",
-    "--dns=172.22.0.1"
-  ],
+  //"runArgs": [
+  //  "--dns=172.22.0.1"
+  //],
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,Z",
     "workspaceFolder": "/workspace",
-  "containerUser": "${localEnv:USER}",
-  "remoteUser": "${localEnv:USER}",
   "postStartCommand": "direnv allow || true",
   "customizations": {
         "vscode": {
             "settings.extensions.verifySignature": false,
+            "settings": {
+              "terminal.integrated.defaultProfile.linux": "zsh"
+            },
             "extensions": [
               // Workspace Specific
-              "redhat.ansible",
               "signageos.signageos-vscode-sops",
               "ms-kubernetes-tools.vscode-kubernetes-tools",
               // Git plugins

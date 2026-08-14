@@ -1,59 +1,51 @@
-FROM ghcr.io/tkpegatron/opsdev:rolling
+FROM docker.io/nixos/nix:2.35.2
 
-# -{ ENV: Consume VSCode Environment variables }
-ARG USERNAME=vscode
-ARG USER_UID=1000
-ARG USER_GID=$USER_UID
-ARG TZ=America/Detroit
+# - { Configure image to use flakes }
+RUN mkdir -p /etc/nix && \
+    echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf
 
-# -{ MOD: Configure userspace environment }
-RUN \
-    # Set the container's timezone \
-    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone; \
-    # Add local user account inside container \
-    adduser --shell /bin/zsh --disabled-password $USERNAME
+# - { Setup Profile }
+# zsh and direnv aren't installed here even though the base image needs a
+# working shell/direnv eventually — the home-manager activation below
+# provides both (programs.zsh.enable, programs.direnv.enable), and installing
+# them twice conflicts when that activation tries to merge into this same
+# profile. gnused is unrelated to either; VS Code's server preflight needs it
+# and nothing else provides it.
+RUN nix profile install nixpkgs#gnused
 
-# Install krew plugin for kubectl, an addon package manager
-run set -x; cd "$(mktemp -d)" && \
-    OS="$(uname | tr '[:upper:]' '[:lower:]')" && \
-    ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')" && \
-    KREW="krew-${OS}_${ARCH}" && \
-    curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/${KREW}.tar.gz" && \
-    tar zxvf "${KREW}.tar.gz" && \
-    mv ./"${KREW}" /usr/bin/kubectl-krew
+# zsh's direnv hook is wired up by home-manager itself (it manages zsh via
+# ZDOTDIR, so ~/.zshrc isn't even the file zsh reads); bash isn't managed by
+# home-manager, so it still needs doing by hand here.
+RUN echo 'eval "$(direnv hook bash)"' >> /root/.bashrc
 
-# Drop into unprivileged user
-USER $USERNAME
+# - { Let non-Nix dynamically-linked binaries run (e.g. the VS Code server) }
+# This image has no /lib64/ld-linux-x86-64.so.2, which any prebuilt FHS binary
+# (like VS Code's server, downloaded and exec'd by the Dev Containers
+# extension) expects as its ELF interpreter. nix-ld provides a stand-in loader
+# at that path which reads NIX_LD/NIX_LD_LIBRARY_PATH to find the real linker
+# and shared libraries at runtime.
+RUN nix profile install "nixpkgs#glibc^out" nixpkgs#stdenv.cc.cc.lib nixpkgs#nix-ld && \
+    mkdir -p /lib64 && \
+    ln -sf /root/.nix-profile/bin/nix-ld /lib64/ld-linux-x86-64.so.2
+ENV NIX_LD=/root/.nix-profile/lib/ld-linux-x86-64.so.2
+ENV NIX_LD_LIBRARY_PATH=/root/.nix-profile/lib
 
-# Prepend user's bin to PATH during build
-ENV PATH="$PATH:/home/$USERNAME/.local/bin"
+# The VS Code server's own preflight (check-requirements.sh) looks for glibc
+# via ldconfig / well-known FHS paths, neither of which exist here — but it
+# explicitly skips that check when /etc/os-release reports ID=nixos.
+RUN printf 'ID=nixos\nNAME=Nix\n' > /etc/os-release
 
-# Configure Krew directory
-ENV PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+# - { Apply the home-manager config (shell, prompt, git identity, gpg) }
+# Container-only path for hosts with no Nix — on NixOS, don't use this image;
+# `nix develop`/direnv into this repo's devShell atop your own system/home
+# config instead (see flake.nix). Built from a copy of just flake.{nix,lock}
+# since the real bind-mounted /workspace isn't present at image build time;
+# it takes over identically once the workspace is actually mounted.
+COPY flake.nix flake.lock /root/.hm-src/
+RUN cd /root/.hm-src && \
+    nix build ".#homeConfigurations.container.activationPackage" -o /root/.hm-result && \
+    nix profile remove git-minimal && \
+    HOME=/root USER=root /root/.hm-result/activate && \
+    rm -rf /root/.hm-src /root/.hm-result
 
-# Install Krew Addons
-RUN set -x \
-    # Add the general krew addon index
-    && kubectl krew index add krew https://github.com/kubernetes-sigs/krew-index \
-    # Add the index for netshoot, a network troubleshooting tools container image
-    && kubectl krew index add netshoot https://github.com/nilic/kubectl-netshoot.git \
-    # Update repositories
-    && kubectl krew update \
-    # Install the extensions: cnpg (postgres cluster manager), commander, and netshoot
-    && kubectl krew install krew/cnpg \
-    && kubectl krew install krew/commander \
-    && kubectl krew install krew/oidc-login \
-    && kubectl krew install netshoot/netshoot
-
-
-# Create mount directories
-#? Letting vscode do this for us on bind mounts causes ownership issues for parent directories.
-RUN mkdir /home/$USERNAME/.config
-
-# Install Python Dependencies
-COPY ./requirements.txt /opt/requirements.txt
-RUN pip install -r /opt/requirements.txt --break-system-packages
-
-# Install Ansible Depenedencies
-COPY ./requirements.yml /opt/requirements.yml
-RUN ansible-galaxy install -r /opt/requirements.yml
+WORKDIR /workspace
