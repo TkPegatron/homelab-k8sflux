@@ -4,10 +4,11 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    dotfiles.url = "github:lunapageofspace/NixOS";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs = { self, nixpkgs, flake-utils, dotfiles }:
+    (flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
           inherit system;
@@ -73,5 +74,12 @@
         };
 
       }
-    );
+    )) // {
+      # Built and activated inside the devcontainer image (see
+      # .devcontainer/Dockerfile) for hosts with no Nix installed. On a
+      # NixOS host, don't use this — that system's own home-manager module
+      # already applies; just `nix develop`/direnv into this repo's devShell
+      # atop it instead.
+      homeConfigurations.container = dotfiles.homeConfigurations.elliana-shell;
+    };
 }

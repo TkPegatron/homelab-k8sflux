@@ -1,11 +1,12 @@
 {
   "name": "Kubernetes",
   "build": {
-    "dockerfile": "./Dockerfile"
+    "dockerfile": "./Dockerfile",
+    "context": ".."
   },
-  "runArgs": [
-    "--dns=172.22.0.1"
-  ],
+  //"runArgs": [
+  //  "--dns=172.22.0.1"
+  //],
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,Z",
     "workspaceFolder": "/workspace",
   "postStartCommand": "direnv allow || true",
