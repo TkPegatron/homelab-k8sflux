@@ -9,7 +9,7 @@
       "automergeType": "branch",
       "matchUpdateTypes": ["digest"],
       "matchPackagePattern": [
-        "ghcr.io/tkpegatron",
+        "ghcr.io/lunapageofspace",
         "ghcr.io/onedr0p",
         "ghcr.io/bjw-s"
       ]
